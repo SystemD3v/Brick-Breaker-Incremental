@@ -3,7 +3,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "constants.h"
-#include "custom_functions.h"
+#include "audio_functions.h"
 
 // Initialize mixer
 void _audio_initializeMixer() {

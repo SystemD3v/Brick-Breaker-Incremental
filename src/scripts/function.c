@@ -6,11 +6,6 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
-static SDL_Window *window = NULL;
-static SDL_Renderer *renderer = NULL;
-static int window_width = 0;
-static int window_height = 0;
-static char* name = "SDL app";
 
 void out(){
     printf("Vous dessinez en dehors de la fenetre\n");

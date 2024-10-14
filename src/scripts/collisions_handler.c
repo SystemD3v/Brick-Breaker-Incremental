@@ -5,7 +5,9 @@
 #include "constants.h"
 #include "brick_patterns.h"
 #include "collisions_handler.h"
-#include "custom_functions.h"
+#include "audio_functions.h"
+#include "playerData.h"
+#include "cash_handler.h"
 
 
 
@@ -75,6 +77,7 @@ void checkCollisionsWithBricks() {
                 brickMap[i][j].sizeY = 0;
 
                 _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_COLLISION_BALL_BRICK], ENUM_audioChannels_COLLISION_SOUND_EFFECT);
+                _cash_income(1);
 
                 return;
             }

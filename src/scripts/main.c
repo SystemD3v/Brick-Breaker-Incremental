@@ -2,13 +2,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 
 #include "constants.h"
 #include "function.h"
-#include "custom_functions.h"
+#include "audio_functions.h"
 #include "brick_patterns.h"
 #include "collisions_handler.h"
+#include "text_handler.h"
+#include "playerData.h"
+#include "cash_handler.h"
 
 
 int keyDownQ;
@@ -37,9 +41,12 @@ void init_game() {
 
     _pattern_allocateMemory();
     _pattern_initAll();
-    _pattern_loadPattern(1);
+    _pattern_loadPattern(2);
 
     _audio_initializeMixer();
+
+    _text_initializeTtfLibrary();
+    _constants_loadFont();
 }
 
 
@@ -117,6 +124,10 @@ void drawGame(){
     // Perform checks
     checkBallCollisionWithBar();
     checkCollisionsWithBricks();
+
+    // Draw texts
+    _text_changeColor(0, 255, 0, 255);
+    _cash_drawCash(4, WINDOW_HEIGHT - 40, gameFont_36);
 
     // And here we go again
     actualize();

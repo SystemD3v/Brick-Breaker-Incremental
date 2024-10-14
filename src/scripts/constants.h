@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 
 
@@ -13,6 +14,13 @@
 #define DEBUG_MODE 0
 
 
+// Window and renderer settings
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
+extern int window_width;
+extern int window_height;
+extern char* name;
+
 // Defining base structures
 struct gameBall {
     int size;
@@ -22,7 +30,6 @@ struct gameBall {
     int velocityY;
 };
 extern struct gameBall ball;
-
 
 struct gameHitbar {
     int sizeX;
@@ -66,6 +73,17 @@ enum audioFiles {
     ENUM_audioFiles_NUMBER_OF_FILES // To keep track of the... NUMBER_OF_FILES!!
 };
 extern char* audioFilepaths[ENUM_audioFiles_NUMBER_OF_FILES];
+
+
+// Font settings
+extern TTF_Font* gameFont_16;
+extern TTF_Font* gameFont_18;
+extern TTF_Font* gameFont_24;
+extern TTF_Font* gameFont_28;
+extern TTF_Font* gameFont_36;
+extern TTF_Font* gameFont_52;
+void _constants_loadFont();
+extern SDL_Color textColor;
 
 
 // Misc settings
