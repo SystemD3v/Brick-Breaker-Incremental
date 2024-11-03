@@ -21,13 +21,23 @@ extern int window_width;
 extern int window_height;
 extern char* name;
 
+
+// Run settings
+extern int programLaunched;
+
+
+// Keydown checks
+extern int keyDownQ;
+extern int keyDownD;
+
+
 // Defining base structures
 struct gameBall {
     int size;
-    int x;
-    int y;
-    int velocityX;
-    int velocityY;
+    float x;
+    float y;
+    float velocityX;
+    float velocityY;
 };
 extern struct gameBall ball;
 
@@ -56,7 +66,6 @@ void _constants_initBrickMaximums();
 
 
 // Gameplay settings
-extern float BALL_SPEED;
 extern float BAR_SPEED_MULTIPLIER;
 
 
@@ -64,12 +73,18 @@ extern float BAR_SPEED_MULTIPLIER;
 #define MAX_AUDIO_CHANNELS 8
 enum audioChannels {
     ENUM_audioChannels_BACKGROUND,
-    ENUM_audioChannels_COLLISION_SOUND_EFFECT
+    ENUM_audioChannels_COLLISION_SOUND_EFFECT,
+    ENUM_audioChannels_UPGRADE_MENU
 };
 
 // Audio files
 enum audioFiles {
     ENUM_audioFiles_COLLISION_BALL_BRICK,
+    ENUM_audioFiles_BUY_SUCCESS_SFX,
+    ENUM_audioFiles_BUY_FAILURE_SFX,
+    ENUM_audioFiles_SMALL_CLICK_SFX,
+    ENUM_audioFiles_LONG_CLICK_SFX,
+    ENUM_audioFiles_DEATH_SFX,
     ENUM_audioFiles_NUMBER_OF_FILES // To keep track of the... NUMBER_OF_FILES!!
 };
 extern char* audioFilepaths[ENUM_audioFiles_NUMBER_OF_FILES];
@@ -82,9 +97,19 @@ extern TTF_Font* gameFont_24;
 extern TTF_Font* gameFont_28;
 extern TTF_Font* gameFont_36;
 extern TTF_Font* gameFont_52;
+extern TTF_Font* gameFont_128;
+extern TTF_Font* gameFont_256;
 void _constants_loadFont();
 extern SDL_Color textColor;
 
+
+// Upgrade menu settings
+extern int IN_UPGRADE_MENU;
+extern int IN_INFINITY_MENU;
+
+extern int maxBrickCostLevelValue;
+extern int maxGameSpeedLevelValue;
+extern int maxLossPreventionLevelValue;
 
 // Misc settings
 #define DVD_MODE 0

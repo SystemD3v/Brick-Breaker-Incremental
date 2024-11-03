@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <jsmn.h> // JSON Handling
+#include <math.h>
 
 
 #include "constants.h"
@@ -13,13 +15,14 @@
 #include "text_handler.h"
 #include "playerData.h"
 #include "cash_handler.h"
-
-
-int keyDownQ;
-int keyDownD;
+#include "upgrade_menu.h"
+#include "infinity_menu.h"
 
 
 void init_game() {
+    _data_loadGame();
+    _data_updateConstantsWithData();
+
     if (DVD_MODE) {
         ball.size = 50;
     } else {
@@ -27,8 +30,8 @@ void init_game() {
     }
     ball.x = 100;
     ball.y = 100;
-    ball.velocityX = BALL_SPEED;
-    ball.velocityY = BALL_SPEED;
+    ball.velocityX = _data_gameSpeed;
+    ball.velocityY = _data_gameSpeed;
 
     bar.sizeX = WINDOW_WIDTH/20;
     bar.sizeY = WINDOW_HEIGHT/50;
@@ -41,13 +44,14 @@ void init_game() {
 
     _pattern_allocateMemory();
     _pattern_initAll();
-    _pattern_loadPattern(2);
+    _pattern_loadPattern(1);
 
     _audio_initializeMixer();
 
     _text_initializeTtfLibrary();
     _constants_loadFont();
 }
+
 
 
 void updateBallPosition() {
@@ -57,35 +61,43 @@ void updateBallPosition() {
         ball.velocityY = ball.velocityY * -1;
     }
     if (ball.velocityX > 0) {
-        ball.velocityX = BALL_SPEED;
+        ball.velocityX = _data_gameSpeed;
     } else {
-        ball.velocityX = -BALL_SPEED;
+        ball.velocityX = -_data_gameSpeed;
     }
     if (ball.velocityY > 0) {
-        ball.velocityY = BALL_SPEED;
+        ball.velocityY = _data_gameSpeed;
     } else {
-        ball.velocityY = -BALL_SPEED;
+        ball.velocityY = -_data_gameSpeed;
     }
 
     ball.x = ball.x + ball.velocityX;
     ball.y = ball.y + ball.velocityY;
 }
+
 void updateBarPosition() {
     bar.x = bar.x + bar.velocityX;
+    if (bar.x < 0) {
+        bar.x = 0;
+    } else if (bar.x + bar.sizeX > WINDOW_WIDTH) {
+        bar.x = WINDOW_WIDTH - bar.sizeX;
+    }
     drawRect(bar.x, bar.y, bar.sizeX, bar.sizeY);
 }
 
+
 void debugPrint() {
     printf("DVD MODE: %d\n", DVD_MODE);
-    printf("%d, %d, %d, %d\n", ball.x, ball.y, ball.velocityX, ball.velocityY);
+    printf("%f, %f, %f, %f\n", ball.x, ball.y, ball.velocityX, ball.velocityY);
 }
+
 
 void checkKeydowns() {
     if (keyDownQ) {
-        bar.x -= BALL_SPEED * BAR_SPEED_MULTIPLIER;
+        bar.x -= _data_gameSpeed * BAR_SPEED_MULTIPLIER;
     }
     if (keyDownD) {
-        bar.x += BALL_SPEED * BAR_SPEED_MULTIPLIER;
+        bar.x += _data_gameSpeed * BAR_SPEED_MULTIPLIER;
     }
 }
 
@@ -124,10 +136,19 @@ void drawGame(){
     // Perform checks
     checkBallCollisionWithBar();
     checkCollisionsWithBricks();
+    checkCollisionsWithBottom();
 
     // Draw texts
     _text_changeColor(0, 255, 0, 255);
     _cash_drawCash(4, WINDOW_HEIGHT - 40, gameFont_36);
+    _text_changeColor(255, 0, 255, 255);
+    _cash_drawInfinity(4, WINDOW_HEIGHT - 80, gameFont_36, 0, 1);
+    _text_changeColor(0, 0, 255, 255);
+    _text_drawText("Press A to open the shop.", WINDOW_WIDTH * 0.73, WINDOW_HEIGHT - 40, gameFont_36);
+    if (_data_infinity > 0) {
+        _text_changeColor(255, 0, 255, 255);
+        _text_drawText("Press I to open the infinity tree.", WINDOW_WIDTH * 0.63, WINDOW_HEIGHT - 80, gameFont_36);
+    }
 
     // And here we go again
     actualize();
@@ -142,13 +163,38 @@ void KeyPressed(SDL_Keycode touche){
     switch (touche) {
         // Voir doc SDL_Keycode pour plus de touches https://wiki.libsdl.org/SDL_Keycode
         case SDLK_ESCAPE:
-            freeAndTerminate();
+            programLaunched = 0;
             break;
         case SDLK_q:
             keyDownQ = 1;
             break;
         case SDLK_d:
             keyDownD = 1;
+            break;
+        case SDLK_a:
+            switch (IN_UPGRADE_MENU) {
+                case 0:
+                    IN_UPGRADE_MENU = 1;
+                    IN_INFINITY_MENU = 0;
+                    break;
+                case 1:
+                    IN_UPGRADE_MENU = 0;
+                    break;
+            }
+            break;
+        case SDLK_i:
+            if (_data_infinity <= 0) {
+                break;
+            }
+            switch (IN_INFINITY_MENU) {
+                case 0:
+                    IN_INFINITY_MENU = 1;
+                    IN_UPGRADE_MENU = 0;
+                    break;
+                case 1:
+                    IN_INFINITY_MENU = 0;
+                    break;
+            }
             break;
         default:
             break;
@@ -168,16 +214,42 @@ void KeyUnpressed(SDL_KeyCode key) {
     }
 }
 
-int onClick() {
-    _audio_loadAndPlay("../assets/audios/beep_beep.wav", 3);
+void click(int mousePosX, int mousePosY) {
+
+}
+
+int onClick(int mousePosX, int mousePosY) {
+    //_audio_loadAndPlay("../assets/audios/beep_beep.wav", 3);
+    switch (IN_UPGRADE_MENU) {
+        case 0:
+            click(mousePosX, mousePosY);
+            break;
+        case 1:
+            _upgradeMenu_clickHandler(mousePosX, mousePosY);
+            break;
+    }
     return 0;
 }
 
 void joyButtonPressed(){
 }
 
+
+
+void GAME_MASTERORDER() {
+    if (IN_UPGRADE_MENU == 1) {
+        _upgradeMenu_displayMenu();
+    } else if (IN_INFINITY_MENU == 1) {
+        _infinityMenu_displayMenu();
+    } else {
+        drawGame();
+    }
+}
+
+
+
+
 void gameLoop() {
-    int programLaunched = 1;
     while (programLaunched == 1) {
         // Boucle pour garder le programme ouvert
         // lorsque programLaunched est different de 1
@@ -201,7 +273,7 @@ void gameLoop() {
                      * event.motion.y | event.motion.x pour les positions de la souris
                      */
                     printf("position de la souris x : %d , y : %d\n", event.motion.x, event.motion.y);
-                    onClick();
+                    onClick(event.motion.x, event.motion.y);
                     break;
                 case SDL_KEYDOWN:
                     KeyPressed(event.key.keysym.sym);
@@ -215,11 +287,7 @@ void gameLoop() {
                     break;
             }
         }
-        /* coder ici pour que le code s'execute après chaque évenement
-         * exemple dessiner un carré avec position int x, int y qu'on peut
-         * deplacer lorsqu'on appuie sur une touche
-         */
-        drawGame();
+        GAME_MASTERORDER();
     }
 }
 
@@ -233,6 +301,9 @@ int main(){
     init(WINDOW_WIDTH, WINDOW_HEIGHT);
     init_game();
     gameLoop();
+
+    _data_saveGame();
+
     printf("Fin du programme\n");
     freeAndTerminate();
 }

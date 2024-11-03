@@ -2,3 +2,4 @@
 
 void checkCollisionsWithBricks();
 void checkBallCollisionWithBar();
+void checkCollisionsWithBottom();
