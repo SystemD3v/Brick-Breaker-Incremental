@@ -7,6 +7,8 @@
 #include "brick_patterns.h"
 
 
+int numberOfPatterns = 2;
+
 // Define dynamic 2d arrays
 struct gameBrick** brickMap;
 int** pattern1;

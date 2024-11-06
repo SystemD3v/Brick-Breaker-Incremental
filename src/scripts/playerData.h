@@ -15,6 +15,7 @@ extern int _data_gameSpeed;
 extern int _data_lossPreventionLevel;
 extern int _data_rToReset;
 extern int _data_tToPattern;
+extern int _data_currentPattern;
 
 extern int UPGRADE_COUNT;
 extern int _data_upgradeBought[10];

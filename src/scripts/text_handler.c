@@ -50,3 +50,4 @@ void _text_drawText(char* textToDraw, int destinationX, int destinationY, TTF_Fo
     SDL_RenderCopy(renderer, textTexture, NULL, &destinationRect);
     SDL_DestroyTexture(textTexture);
 }
+

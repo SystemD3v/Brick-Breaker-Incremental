@@ -44,7 +44,7 @@ void init_game() {
 
     _pattern_allocateMemory();
     _pattern_initAll();
-    _pattern_loadPattern(1);
+    _pattern_loadPattern(_data_currentPattern);
 
     _audio_initializeMixer();
 
@@ -150,6 +150,7 @@ void drawGame(){
         _text_drawText("Press I to open the infinity tree.", WINDOW_WIDTH * 0.63, WINDOW_HEIGHT - 80, gameFont_36);
     }
 
+
     // And here we go again
     actualize();
     usleep(1000000 / FPS); // 60 images par seconde | 1000000 = 1 seconde
@@ -196,6 +197,16 @@ void KeyPressed(SDL_Keycode touche){
                     break;
             }
             break;
+        case SDLK_r:
+            if (_data_rToReset) {
+                _pattern_loadPattern(_data_currentPattern);
+            }
+            break;
+        case SDLK_t:
+            if (_data_tToPattern) {
+                _data_currentPattern = (numberOfPatterns > _data_currentPattern) ? _data_currentPattern + 1 : 1;
+                _pattern_loadPattern(_data_currentPattern);
+            }
         default:
             break;
     }
@@ -272,7 +283,6 @@ void gameLoop() {
                     /* clique de la souris
                      * event.motion.y | event.motion.x pour les positions de la souris
                      */
-                    printf("position de la souris x : %d , y : %d\n", event.motion.x, event.motion.y);
                     onClick(event.motion.x, event.motion.y);
                     break;
                 case SDL_KEYDOWN:

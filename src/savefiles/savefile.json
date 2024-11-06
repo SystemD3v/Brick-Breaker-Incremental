@@ -1,12 +1,13 @@
 {
-	"cash":	273319040,
-	"infinity":	0,
+	"cash":	1805287360,
+	"infinity":	9,
 	"upgradeBrickCostLevel":	22,
 	"upgradeWidthLevel":	1,
 	"upgradeHeightLevel":	1,
-	"upgradeGameSpeed":	15,
-	"upgradeLossPrevention":	11,
+	"upgradeGameSpeed":	5,
+	"upgradeLossPrevention":	10,
 	"upgradeRToReset":	1,
 	"upgradeTToPattern":	1,
-	"upgradeBought":	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	"saveCurrentPattern":	1,
+	"upgradeBought":	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 }

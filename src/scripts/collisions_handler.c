@@ -94,7 +94,7 @@ void checkCollisionsWithBricks() {
     }
 
     if (!(isAtLeastOnePresent)) {
-        _pattern_loadPattern(1);
+        _pattern_loadPattern(_data_currentPattern);
     }
 }
 
@@ -128,8 +128,76 @@ void checkBallCollisionWithBar() {
 }
 
 
+void easterEggAnimation() {
+
+    int inAnimation = 1;
+    int animFramesLeft = 60 * 7;
+    int animFramesElapsed = 0;
+    int initialFramecount = animFramesLeft;
+
+
+    char* textToDraw = "*But it refused.                                                                               ";
+    int textVisibleGraphemes = 0;
+    int textFrameDelay = 60;
+    int textPositionX = WINDOW_WIDTH * 0.2;
+    int textPositionY = WINDOW_HEIGHT * 0.8;
+    int textSpacing = 40;
+    int randomMovementMaximum = 8;
+
+    while (inAnimation) {
+
+        clear();
+
+
+
+        changeColor(0, 0, 0);
+        drawRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+
+        if (textFrameDelay < animFramesElapsed) {
+            if (animFramesElapsed % 10 == 0) {
+                textVisibleGraphemes += 1;
+            }
+        }
+
+        for (int i = 0; i < textVisibleGraphemes; i++) {;
+            char character[2] = { textToDraw[i], '\0' };
+            if (i >= 8 && i <= 14) {
+                _text_changeColor(255, 0, 0, 255);
+            } else {
+                _text_changeColor(255, 255, 255, 255);
+            }
+            _text_drawText(character, textPositionX + i * textSpacing + rand() % randomMovementMaximum, textPositionY + rand() % randomMovementMaximum, gameFont_52);
+        }
+
+        actualize();
+        usleep(1000000/FPS);
+
+        animFramesElapsed += 1;
+        animFramesLeft -= 1;
+        if (animFramesLeft <= 0) {
+            inAnimation = 0;
+        }
+
+    }
+
+    ball.x = 100;
+    ball.y = 100;
+
+}
+
 void checkCollisionsWithBottom() {
     if (ball.y > WINDOW_HEIGHT * 0.985) {
+
+
+        int easterEggChance = 20;
+        if (rand() % easterEggChance == 0) {
+            easterEggAnimation();
+            return;
+        }
+
+
+
         _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_DEATH_SFX], ENUM_audioChannels_COLLISION_SOUND_EFFECT);
 
         int inAnimation = 1;

@@ -1,5 +1,7 @@
 #pragma once
 
+extern int numberOfPatterns;
+
 // Define bricks' structure
 struct gameBrick {
     int x;

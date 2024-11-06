@@ -17,6 +17,7 @@ int _data_upgradeWidthLevel = 1;
 int _data_upgradeHeightLevel = 1;
 int _data_gameSpeed = 5;
 int _data_lossPreventionLevel = 1;
+int _data_currentPattern = 1;
 int _data_rToReset = 0;
 int _data_tToPattern = 0;
 
@@ -45,6 +46,8 @@ void _data_saveGame() {
     cJSON_AddNumberToObject(json, "upgradeLossPrevention", _data_lossPreventionLevel);
     cJSON_AddNumberToObject(json, "upgradeRToReset", _data_rToReset);
     cJSON_AddNumberToObject(json, "upgradeTToPattern", _data_tToPattern);
+
+    cJSON_AddNumberToObject(json, "saveCurrentPattern", _data_currentPattern);
 
     // Add the _data_upgradeBought array to JSON
     cJSON *upgradeBoughtArray = cJSON_CreateIntArray(_data_upgradeBought, UPGRADE_COUNT);
@@ -124,6 +127,9 @@ int _data_loadGame() {
 
     cJSON *upgradeTToPattern_item = cJSON_GetObjectItem(json, "upgradeTToPattern");
     if (upgradeTToPattern_item && cJSON_IsNumber(upgradeTToPattern_item)) _data_tToPattern = upgradeTToPattern_item->valueint;
+
+    cJSON *saveCurrentPattern_item = cJSON_GetObjectItem(json, "saveCurrentPattern");
+    if (saveCurrentPattern_item && cJSON_IsNumber(saveCurrentPattern_item)) _data_currentPattern = saveCurrentPattern_item->valueint;
 
     // Load _data_upgradeBought array
     cJSON *upgradeBoughtArray = cJSON_GetObjectItem(json, "upgradeBought");
