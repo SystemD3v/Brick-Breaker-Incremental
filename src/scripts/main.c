@@ -101,6 +101,25 @@ void checkKeydowns() {
     }
 }
 
+void drawBackground() {
+    switch (_data_backgroundMainSelected) {
+        case 4:
+            sprite(0 ,0, "../assets/imgs/backgrounds/tier4bg.bmp");
+            break;
+        case 3:
+            sprite(0 ,0, "../assets/imgs/backgrounds/tier3bg.bmp");
+            break;
+        case 2:
+            sprite(0 ,0, "../assets/imgs/backgrounds/tier2bg.bmp");
+            break;
+        case 1:
+            sprite(0 ,0, "../assets/imgs/backgrounds/tier1bg.bmp");
+            break;
+        default:
+            break;
+    }
+}
+
 void drawGame(){
     /* Ici je dessine mon jeu
      * exemple position x, y modifiés dans KeyPressed() et utilisés pour
@@ -109,6 +128,7 @@ void drawGame(){
     clear();
 
     // Barckground stuff here
+    drawBackground();
 
 
     // Drawing bricks

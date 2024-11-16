@@ -247,11 +247,12 @@ void init(int windowWidth, int windowHeight) {
         SDL_Log("ERREUR : Init SDL > %s\nParametres passes %d , %d\n",SDL_GetError(), windowWidth, windowHeight);
         freeAndTerminate();
     }
-    if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, 0, &window, &renderer)) {
+    if (SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC, &window, &renderer)) {
         SDL_Log("ERREUR : Init window and renderer > %s\nParametres passes %d , %d\n",SDL_GetError(), windowWidth, windowHeight);
         freeAndTerminate();
     }
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_GL_SetSwapInterval(1);
     SDL_SetWindowTitle(window, "Brick Breaker");
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);

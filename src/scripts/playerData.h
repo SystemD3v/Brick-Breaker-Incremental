@@ -17,6 +17,16 @@ extern int _data_rToReset;
 extern int _data_tToPattern;
 extern int _data_currentPattern;
 
+extern int UPGRADE_BACKGROUND_MAIN;
+extern int _data_upgradeBackgroundMain[4];
+extern int _data_backgroundMainSelected;
+extern int UPGRADE_BACKGROUND_SHOP;
+extern int _data_upgradeBackgroundShop[4];
+extern int _data_backgroundShopSelected;
+extern int UPGRADE_BACKGROUND_INF;
+extern int _data_upgradeBackgroundInf[4];
+extern int _data_backgroundInfSelected;
+
 extern int UPGRADE_COUNT;
 extern int _data_upgradeBought[10];
 

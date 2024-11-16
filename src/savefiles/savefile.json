@@ -1,13 +1,19 @@
 {
-	"cash":	1805287360,
-	"infinity":	9,
+	"cash":	853029696,
+	"infinity":	10,
 	"upgradeBrickCostLevel":	22,
 	"upgradeWidthLevel":	1,
 	"upgradeHeightLevel":	1,
-	"upgradeGameSpeed":	5,
-	"upgradeLossPrevention":	10,
+	"upgradeGameSpeed":	10,
+	"upgradeLossPrevention":	11,
 	"upgradeRToReset":	1,
 	"upgradeTToPattern":	1,
 	"saveCurrentPattern":	1,
-	"upgradeBought":	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	"upgradeBought":	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	"backgroundMainSelected":	4,
+	"upgradeBackgroundMain":	[1, 1, 1, 1],
+	"backgroundShopSelected":	4,
+	"upgradeBackgroundShop":	[1, 1, 1, 1],
+	"backgroundInfSelected":	4,
+	"upgradeBackgroundInf":	[1, 1, 1, 1]
 }

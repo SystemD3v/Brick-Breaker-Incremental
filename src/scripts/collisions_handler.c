@@ -62,20 +62,20 @@ void checkCollisionsWithBricks() {
                     // Horizontal
                     if (deltaX > 0) {
                         // Ball hit right
-                        ball.velocityX = abs(ball.velocityX);  // Vel right
+                        ball.velocityX = fabsf(ball.velocityX);  // Vel right
                     } else {
                         // Ball hit left
-                        ball.velocityX = -abs(ball.velocityX);  // Vel left
+                        ball.velocityX = -fabsf(ball.velocityX);  // Vel left
                     }
 
                 } else {
                     // Vertical
                     if (deltaY > 0) {
                         // Ball hit the bottom of the brick
-                        ball.velocityY = abs(ball.velocityY);  // Vel down
+                        ball.velocityY = fabsf(ball.velocityY);  // Vel down
                     } else {
                         // Ball hit the top of the brick
-                        ball.velocityY = -abs(ball.velocityY);  // Vel up
+                        ball.velocityY = -fabsf(ball.velocityY);  // Vel up
                     }
                 }
 
@@ -104,7 +104,7 @@ void checkBallCollisionWithBar() {
         (ball.y + ball.size >= bar.y && ball.y <= bar.y + bar.sizeY)) {
 
         // Ball hits the top of the bar
-        ball.velocityY = -abs(ball.velocityY);  // Ball goes up up
+        ball.velocityY = -fabsf(ball.velocityY);  // Ball goes up up
 
         // Get centers X
         int barCenterX = bar.x + bar.sizeX / 2;
@@ -113,12 +113,12 @@ void checkBallCollisionWithBar() {
         // Check for leftSide
         if (ballCenterX < barCenterX) {
             // Hit --> adjust
-            ball.velocityX = -abs(ball.velocityX);  // Ball goes left left
+            ball.velocityX = -fabsf(ball.velocityX);  // Ball goes left left
         }
         // Check for rightSide
         else if (ballCenterX > barCenterX) {
             // Hit --> adjust
-            ball.velocityX = abs(ball.velocityX);  // Ball goes right right
+            ball.velocityX = fabsf(ball.velocityX);  // Ball goes right right
         }
         // If near center, reduce velocity X
         else {
@@ -216,7 +216,7 @@ void checkCollisionsWithBottom() {
         int ballColorG = 0;
         int ballColorB = 0;
 
-        int forceQuitDelay = 120;
+        int forceQuitDelay = 60;
         int forceQuitted = 0;
 
 
@@ -224,6 +224,7 @@ void checkCollisionsWithBottom() {
 
             clear();
 
+            /* Flashbang thingy
             if (switchRepeatsLeft > 0) {
                 if (colorStep == 0) {
 
@@ -248,6 +249,9 @@ void checkCollisionsWithBottom() {
                 }
                 switchRepeatsLeft -= 1;
             }
+            */
+
+
 
             changeColor(bgColorR, bgColorG, bgColorB);
             drawRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);

@@ -21,6 +21,16 @@ int _data_currentPattern = 1;
 int _data_rToReset = 0;
 int _data_tToPattern = 0;
 
+int UPGRADE_BACKGROUND_MAIN = 4;
+int _data_upgradeBackgroundMain[4] = {0};
+int _data_backgroundMainSelected = 0;
+int UPGRADE_BACKGROUND_SHOP = 4;
+int _data_upgradeBackgroundShop[4] = {0};
+int _data_backgroundShopSelected = 0;
+int UPGRADE_BACKGROUND_INF = 4;
+int _data_upgradeBackgroundInf[4] = {0};
+int _data_backgroundInfSelected = 0;
+
 int UPGRADE_COUNT = 10;
 int _data_upgradeBought[10] = {0};
 
@@ -49,9 +59,28 @@ void _data_saveGame() {
 
     cJSON_AddNumberToObject(json, "saveCurrentPattern", _data_currentPattern);
 
-    // Add the _data_upgradeBought array to JSON
+
     cJSON *upgradeBoughtArray = cJSON_CreateIntArray(_data_upgradeBought, UPGRADE_COUNT);
     cJSON_AddItemToObject(json, "upgradeBought", upgradeBoughtArray);
+
+
+    cJSON_AddNumberToObject(json, "backgroundMainSelected", _data_backgroundMainSelected);
+
+    cJSON *upgradeBackgroundMainBoughtArray = cJSON_CreateIntArray(_data_upgradeBackgroundMain, UPGRADE_BACKGROUND_MAIN);
+    cJSON_AddItemToObject(json, "upgradeBackgroundMain", upgradeBackgroundMainBoughtArray);
+
+
+    cJSON_AddNumberToObject(json, "backgroundShopSelected", _data_backgroundShopSelected);
+
+    cJSON *upgradeBackgroundShopBoughtArray = cJSON_CreateIntArray(_data_upgradeBackgroundShop, UPGRADE_BACKGROUND_SHOP);
+    cJSON_AddItemToObject(json, "upgradeBackgroundShop", upgradeBackgroundShopBoughtArray);
+
+
+    cJSON_AddNumberToObject(json, "backgroundInfSelected", _data_backgroundInfSelected);
+
+    cJSON *upgradeBackgroundInfBoughtArray = cJSON_CreateIntArray(_data_upgradeBackgroundInf, UPGRADE_BACKGROUND_INF);
+    cJSON_AddItemToObject(json, "upgradeBackgroundInf", upgradeBackgroundInfBoughtArray);
+
 
     char *json_string = cJSON_Print(json);
 
@@ -131,7 +160,8 @@ int _data_loadGame() {
     cJSON *saveCurrentPattern_item = cJSON_GetObjectItem(json, "saveCurrentPattern");
     if (saveCurrentPattern_item && cJSON_IsNumber(saveCurrentPattern_item)) _data_currentPattern = saveCurrentPattern_item->valueint;
 
-    // Load _data_upgradeBought array
+
+
     cJSON *upgradeBoughtArray = cJSON_GetObjectItem(json, "upgradeBought");
     if (upgradeBoughtArray && cJSON_IsArray(upgradeBoughtArray)) {
         for (int i = 0; i < UPGRADE_COUNT; i++) {
@@ -141,6 +171,44 @@ int _data_loadGame() {
             }
         }
     }
+
+
+    cJSON *upgradeBackgroundMainArray = cJSON_GetObjectItem(json, "upgradeBackgroundMain");
+    if (upgradeBackgroundMainArray && cJSON_IsArray(upgradeBackgroundMainArray)) {
+        for (int i = 0; i < UPGRADE_BACKGROUND_MAIN; i++) {
+            cJSON *item = cJSON_GetArrayItem(upgradeBackgroundMainArray, i);
+            if (item && cJSON_IsNumber(item)) {
+                _data_upgradeBackgroundMain[i] = item->valueint;
+            }
+        }
+    }
+    cJSON *saveBackgroundMainSelected_item = cJSON_GetObjectItem(json, "backgroundMainSelected");
+    if (saveBackgroundMainSelected_item && cJSON_IsNumber(saveBackgroundMainSelected_item)) _data_backgroundMainSelected = saveBackgroundMainSelected_item->valueint;
+
+    cJSON *upgradeBackgroundShopArray = cJSON_GetObjectItem(json, "upgradeBackgroundShop");
+    if (upgradeBackgroundShopArray && cJSON_IsArray(upgradeBackgroundShopArray)) {
+        for (int i = 0; i < UPGRADE_BACKGROUND_SHOP; i++) {
+            cJSON *item = cJSON_GetArrayItem(upgradeBackgroundShopArray, i);
+            if (item && cJSON_IsNumber(item)) {
+                _data_upgradeBackgroundShop[i] = item->valueint;
+            }
+        }
+    }
+    cJSON *saveBackgroundShopSelected_item = cJSON_GetObjectItem(json, "backgroundShopSelected");
+    if (saveBackgroundShopSelected_item && cJSON_IsNumber(saveBackgroundShopSelected_item)) _data_backgroundShopSelected = saveBackgroundShopSelected_item->valueint;
+
+    cJSON *upgradeBackgroundInfArray = cJSON_GetObjectItem(json, "upgradeBackgroundInf");
+    if (upgradeBackgroundInfArray && cJSON_IsArray(upgradeBackgroundInfArray)) {
+        for (int i = 0; i < UPGRADE_BACKGROUND_INF; i++) {
+            cJSON *item = cJSON_GetArrayItem(upgradeBackgroundInfArray, i);
+            if (item && cJSON_IsNumber(item)) {
+                _data_upgradeBackgroundInf[i] = item->valueint;
+            }
+        }
+    }
+    cJSON *saveBackgroundInfSelected_item = cJSON_GetObjectItem(json, "backgroundInfSelected");
+    if (saveBackgroundInfSelected_item && cJSON_IsNumber(saveBackgroundInfSelected_item)) _data_backgroundInfSelected = saveBackgroundInfSelected_item->valueint;
+
 
     cJSON_Delete(json);
     free(buffer);

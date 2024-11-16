@@ -18,48 +18,50 @@
 
 int currentPage = 0;
 int aestheticsUpgradesLayer = 0;
+int xMouse, yMouse;
 
+void drawBackgroundShop() {
+    switch (_data_backgroundShopSelected) {
+        case 4:
+            sprite(0 ,0, "../assets/imgs/backgrounds/shop/tier4bg.bmp");
+            break;
+        case 3:
+            sprite(0 ,0, "../assets/imgs/backgrounds/shop/tier3bg.bmp");
+            break;
+        case 2:
+            sprite(0 ,0, "../assets/imgs/backgrounds/shop/tier2bg.bmp");
+            break;
+        case 1:
+            sprite(0 ,0, "../assets/imgs/backgrounds/shop/tier1bg.bmp");
+            break;
+        default:
+            break;
+    }
+}
 
 int animationFrame = 0;
 int maxWhiggleSize = 40;
-int whiggleSpacing = 50;
-int whiggleDiff = 1;
+int whiggleSpacing = 35;
 int whiggleDirection = 0;
 int textStartPosition = 0;
-int whigglePosition = 0;
+float whigglePosition = 0;
+float whiggleYspacing = 10;
+float speed = 0.12;
+float amount = 0.5;
 void whiggleText(char* text, int positionX, int positionY, TTF_Font* font) {
-    char* textToDraw = text;
+    int charLength = strlen(text);
 
-    int charLength = strlen(textToDraw);
-
-    whiggleDirection = 0;
     for (int letter = 0; letter < charLength; letter++) {
-        char character[2] = { textToDraw[letter], '\0' };
-        int yOffset = 0;
+        char character[2] = { text[letter], '\0' };
 
-        if (whiggleDirection) {
-            yOffset = whigglePosition;
+        float angle = (animationFrame * speed) + (letter * amount);
+        int yOffset = (int)(sin(angle) * maxWhiggleSize / 2);
 
-            _text_drawText(character, positionX + whiggleSpacing * letter, positionY + yOffset, font);
-            whigglePosition += whiggleDiff;
-            if (whigglePosition >= maxWhiggleSize) {
-                whiggleDirection = 0;
-            }
-        } else {
-            yOffset = whigglePosition;
-
-            _text_drawText(character, positionX + whiggleSpacing * letter, positionY + yOffset, font);
-            whigglePosition -= whiggleDiff;
-            if (whigglePosition <= 0) {
-                whiggleDirection = 1;
-            }
-        }
-
-        animationFrame += 1;
-        if (animationFrame > maxWhiggleSize) {
-            animationFrame = 0;
-        }
+        // Draw the character at the calculated position
+        _text_drawText(character, positionX + whiggleSpacing * letter, positionY + yOffset, font);
     }
+
+    animationFrame = (animationFrame + 1); //% maxWhiggleSize;
 }
 
 
@@ -202,23 +204,443 @@ void displayPage0() {
 
 
 void page1upgrade0() {
-    //_text_changeColor(255, 255, 255, 255);
-    //_text_drawText("Backgrounds", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.2, gameFont_52);
-
     _text_changeColor(255, 255, 255, 255);
     // Backgrounds
     whiggleText("Backgrounds", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.2, gameFont_52);
 
+
     _text_changeColor(0, 0, 255, 255);
-    _text_drawText("Game background", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.27, gameFont_36);
+    _text_drawText("Game background", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.285, gameFont_36);
+
     changeColor(155, 155, 155);
-    drawSquare(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.3, WINDOW_WIDTH * 0.05);
+
+    drawRect(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.024, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.002);
+
+    drawSquare(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
     changeColor(255, 255, 255);
-    drawSquare(WINDOW_WIDTH * 0.2025, WINDOW_HEIGHT * 0.305, WINDOW_WIDTH * 0.045);
+    drawSquare(WINDOW_WIDTH * 0.2025, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
     _text_changeColor(255, 0, 0, 255);
-    _text_drawText("1", WINDOW_WIDTH * 0.205, WINDOW_HEIGHT * 0.305, gameFont_52);
+    _text_drawText("1", WINDOW_WIDTH * 0.205, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.3525, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("2", WINDOW_WIDTH * 0.355, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.50, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.5025, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("3", WINDOW_WIDTH * 0.505, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.65, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.6525, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("4", WINDOW_WIDTH * 0.655, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+
+
+
+    _text_changeColor(0, 0, 255, 255);
+    _text_drawText("Shop background", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.465, gameFont_36);
+
+    changeColor(155, 155, 155);
+
+    drawRect(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.024, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.002);
+
+    drawSquare(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.50, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.2025, WINDOW_HEIGHT * 0.505, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("1", WINDOW_WIDTH * 0.205, WINDOW_HEIGHT * 0.505, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.50, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.3525, WINDOW_HEIGHT * 0.505, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("2", WINDOW_WIDTH * 0.355, WINDOW_HEIGHT * 0.505, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.50, WINDOW_HEIGHT * 0.50, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.5025, WINDOW_HEIGHT * 0.505, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("3", WINDOW_WIDTH * 0.505, WINDOW_HEIGHT * 0.505, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.65, WINDOW_HEIGHT * 0.50, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.6525, WINDOW_HEIGHT * 0.505, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("4", WINDOW_WIDTH * 0.655, WINDOW_HEIGHT * 0.505, gameFont_52);
+
+
+
+
+
+    _text_changeColor(0, 0, 255, 255);
+    _text_drawText("Infinity background", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.645, gameFont_36);
+
+    changeColor(155, 155, 155);
+
+    drawRect(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.024, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.002);
+
+    drawSquare(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.68, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.2025, WINDOW_HEIGHT * 0.685, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("1", WINDOW_WIDTH * 0.205, WINDOW_HEIGHT * 0.685, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.68, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.3525, WINDOW_HEIGHT * 0.685, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("2", WINDOW_WIDTH * 0.355, WINDOW_HEIGHT * 0.685, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.50, WINDOW_HEIGHT * 0.68, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.5025, WINDOW_HEIGHT * 0.685, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("3", WINDOW_WIDTH * 0.505, WINDOW_HEIGHT * 0.685, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.65, WINDOW_HEIGHT * 0.68, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.6525, WINDOW_HEIGHT * 0.685, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("4", WINDOW_WIDTH * 0.655, WINDOW_HEIGHT * 0.685, gameFont_52);
+
+
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.2 &&
+        xMouse <= WINDOW_WIDTH * 0.25 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 1 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundMain[0] == 0) {
+            _text_drawText("Buy for $100", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else if (_data_backgroundMainSelected == 1) {
+            _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        } else {
+            _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.35 &&
+        xMouse <= WINDOW_WIDTH * 0.40 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 2 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundMain[0] == 0) {
+            _text_drawText("Required: tier 1!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundMain[1] == 0) {
+                _text_drawText("Buy for $1000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundMainSelected == 2) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.50 &&
+        xMouse <= WINDOW_WIDTH * 0.55 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 3 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundMain[1] == 0) {
+            _text_drawText("Required: tier 2!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundMain[2] == 0) {
+                _text_drawText("Buy for $10000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundMainSelected == 3) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.65 &&
+        xMouse <= WINDOW_WIDTH * 0.70 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 4 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundMain[2] == 0) {
+            _text_drawText("Required: tier 3!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundMain[3] == 0) {
+                _text_drawText("Buy for $100000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundMainSelected == 4) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.2 &&
+        xMouse <= WINDOW_WIDTH * 0.25 &&
+        yMouse >= WINDOW_HEIGHT * 0.50 &&
+        yMouse <= WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 1 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundShop[0] == 0) {
+            _text_drawText("Buy for $200", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else if (_data_backgroundShopSelected == 1) {
+            _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        } else {
+            _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.35 &&
+        xMouse <= WINDOW_WIDTH * 0.40 &&
+        yMouse >= WINDOW_HEIGHT * 0.50 &&
+        yMouse <= WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 2 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundShop[0] == 0) {
+            _text_drawText("Required: tier 1!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundShop[1] == 0) {
+                _text_drawText("Buy for $2000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundShopSelected == 2) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.50 &&
+        xMouse <= WINDOW_WIDTH * 0.55 &&
+        yMouse >= WINDOW_HEIGHT * 0.50 &&
+        yMouse <= WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 3 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundShop[1] == 0) {
+            _text_drawText("Required: tier 2!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundShop[2] == 0) {
+                _text_drawText("Buy for $20000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundShopSelected == 3) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.65 &&
+        xMouse <= WINDOW_WIDTH * 0.70 &&
+        yMouse >= WINDOW_HEIGHT * 0.50 &&
+        yMouse <= WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 4 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundShop[2] == 0) {
+            _text_drawText("Required: tier 3!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundShop[3] == 0) {
+                _text_drawText("Buy for $200000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundShopSelected == 4) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.2 &&
+        xMouse <= WINDOW_WIDTH * 0.25 &&
+        yMouse >= WINDOW_HEIGHT * 0.68 &&
+        yMouse <= WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 1 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundInf[0] == 0) {
+            _text_drawText("Buy for $500", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else if (_data_backgroundInfSelected == 1) {
+            _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        } else {
+            _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.35 &&
+        xMouse <= WINDOW_WIDTH * 0.40 &&
+        yMouse >= WINDOW_HEIGHT * 0.68 &&
+        yMouse <= WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 2 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundInf[0] == 0) {
+            _text_drawText("Required: tier 1!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundInf[1] == 0) {
+                _text_drawText("Buy for $5000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundInfSelected == 2) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.50 &&
+        xMouse <= WINDOW_WIDTH * 0.55 &&
+        yMouse >= WINDOW_HEIGHT * 0.68 &&
+        yMouse <= WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 3 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundInf[1] == 0) {
+            _text_drawText("Required: tier 2!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundInf[2] == 0) {
+                _text_drawText("Buy for $50000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundInfSelected == 3) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.65 &&
+        xMouse <= WINDOW_WIDTH * 0.70 &&
+        yMouse >= WINDOW_HEIGHT * 0.68 &&
+        yMouse <= WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 4 background", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBackgroundInf[2] == 0) {
+            _text_drawText("Required: tier 3!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBackgroundInf[3] == 0) {
+                _text_drawText("Buy for $500000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_backgroundInfSelected == 4) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
 
 }
+
+
 void displayPage1() {
     _text_changeColor(0, 0, 255, 255);
     _text_drawText("Gameplay upgrades! Graphics, SFX, and more!", 0, 0, gameFont_52);
@@ -362,18 +784,365 @@ void clickPage0(int mousePosX, int mousePosY) {
     }
 }
 
-void clickPage1(int mousePosX, int mousePosY) {
+void clickPage1_0(int mousePosX, int mousePosY) {
     _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_LONG_CLICK_SFX], ENUM_audioChannels_UPGRADE_MENU);
 
+    if (mousePosX >= WINDOW_WIDTH * 0.2 &&
+        mousePosX <= WINDOW_WIDTH * 0.25 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundMain[0] == 0) {
+            if (_data_cash >= 1000) {
+                _data_cash -= 1000;
+                _data_upgradeBackgroundMain[0] = 1;
+                _data_backgroundMainSelected = 1;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundMainSelected != 1) {
+                _data_backgroundMainSelected = 1;
+            } else {
+                _data_backgroundMainSelected = 0;
+            }
+        }
+    }
 
+    if (mousePosX >= WINDOW_WIDTH * 0.35 &&
+        mousePosX <= WINDOW_WIDTH * 0.40 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundMain[0] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundMain[1] == 0) {
+            if (_data_cash >= 10000) {
+                _data_cash -= 10000;
+                _data_upgradeBackgroundMain[1] = 1;
+                _data_backgroundMainSelected = 2;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundMainSelected != 2) {
+                _data_backgroundMainSelected = 2;
+            } else {
+                _data_backgroundMainSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.50 &&
+        mousePosX <= WINDOW_WIDTH * 0.55 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundMain[1] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundMain[2] == 0) {
+            if (_data_cash >= 100000) {
+                _data_cash -= 100000;
+                _data_upgradeBackgroundMain[2] = 1;
+                _data_backgroundMainSelected = 3;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundMainSelected != 3) {
+                _data_backgroundMainSelected = 3;
+            } else {
+                _data_backgroundMainSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.65 &&
+        mousePosX <= WINDOW_WIDTH * 0.70 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundMain[2] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundMain[3] == 0) {
+            if (_data_cash >= 1000000) {
+                _data_cash -= 1000000;
+                _data_upgradeBackgroundMain[3] = 1;
+                _data_backgroundMainSelected = 4;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundMainSelected != 4) {
+                _data_backgroundMainSelected = 4;
+            } else {
+                _data_backgroundMainSelected = 0;
+            }
+        }
+    }
+
+
+
+
+
+    if (mousePosX >= WINDOW_WIDTH * 0.2 &&
+        mousePosX <= WINDOW_WIDTH * 0.25 &&
+        mousePosY >= WINDOW_HEIGHT * 0.50 &&
+        mousePosY <= WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundShop[0] == 0) {
+            if (_data_cash >= 2000) {
+                _data_cash -= 2000;
+                _data_upgradeBackgroundShop[0] = 1;
+                _data_backgroundShopSelected = 1;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundShopSelected != 1) {
+                _data_backgroundShopSelected = 1;
+            } else {
+                _data_backgroundShopSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.35 &&
+        mousePosX <= WINDOW_WIDTH * 0.40 &&
+        mousePosY >= WINDOW_HEIGHT * 0.50 &&
+        mousePosY <= WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundShop[0] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundShop[1] == 0) {
+            if (_data_cash >= 20000) {
+                _data_cash -= 20000;
+                _data_upgradeBackgroundShop[1] = 1;
+                _data_backgroundShopSelected = 2;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundShopSelected != 2) {
+                _data_backgroundShopSelected = 2;
+            } else {
+                _data_backgroundShopSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.50 &&
+        mousePosX <= WINDOW_WIDTH * 0.55 &&
+        mousePosY >= WINDOW_HEIGHT * 0.50 &&
+        mousePosY <= WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundShop[1] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundShop[2] == 0) {
+            if (_data_cash >= 200000) {
+                _data_cash -= 200000;
+                _data_upgradeBackgroundShop[2] = 1;
+                _data_backgroundShopSelected = 3;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundShopSelected != 3) {
+                _data_backgroundShopSelected = 3;
+            } else {
+                _data_backgroundShopSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.65 &&
+        mousePosX <= WINDOW_WIDTH * 0.70 &&
+        mousePosY >= WINDOW_HEIGHT * 0.50 &&
+        mousePosY <= WINDOW_HEIGHT * 0.50 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundShop[2] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundShop[3] == 0) {
+            if (_data_cash >= 2000000) {
+                _data_cash -= 2000000;
+                _data_upgradeBackgroundShop[3] = 1;
+                _data_backgroundShopSelected = 4;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundShopSelected != 4) {
+                _data_backgroundShopSelected = 4;
+            } else {
+                _data_backgroundShopSelected = 0;
+            }
+        }
+    }
+
+
+
+
+
+    if (mousePosX >= WINDOW_WIDTH * 0.2 &&
+        mousePosX <= WINDOW_WIDTH * 0.25 &&
+        mousePosY >= WINDOW_HEIGHT * 0.68 &&
+        mousePosY <= WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundInf[0] == 0) {
+            if (_data_cash >= 5000) {
+                _data_cash -= 5000;
+                _data_upgradeBackgroundInf[0] = 1;
+                _data_backgroundInfSelected = 1;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundInfSelected != 1) {
+                _data_backgroundInfSelected = 1;
+            } else {
+                _data_backgroundInfSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.35 &&
+        mousePosX <= WINDOW_WIDTH * 0.40 &&
+        mousePosY >= WINDOW_HEIGHT * 0.68 &&
+        mousePosY <= WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundInf[0] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundInf[1] == 0) {
+            if (_data_cash >= 50000) {
+                _data_cash -= 50000;
+                _data_upgradeBackgroundInf[1] = 1;
+                _data_backgroundInfSelected = 2;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundInfSelected != 2) {
+                _data_backgroundInfSelected = 2;
+            } else {
+                _data_backgroundInfSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.50 &&
+        mousePosX <= WINDOW_WIDTH * 0.55 &&
+        mousePosY >= WINDOW_HEIGHT * 0.68 &&
+        mousePosY <= WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundInf[1] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundInf[2] == 0) {
+            if (_data_cash >= 500000) {
+                _data_cash -= 500000;
+                _data_upgradeBackgroundInf[2] = 1;
+                _data_backgroundInfSelected = 3;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundInfSelected != 3) {
+                _data_backgroundInfSelected = 3;
+            } else {
+                _data_backgroundInfSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.65 &&
+        mousePosX <= WINDOW_WIDTH * 0.70 &&
+        mousePosY >= WINDOW_HEIGHT * 0.68 &&
+        mousePosY <= WINDOW_HEIGHT * 0.68 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBackgroundInf[2] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBackgroundInf[3] == 0) {
+            if (_data_cash >= 5000000) {
+                _data_cash -= 5000000;
+                _data_upgradeBackgroundInf[3] = 1;
+                _data_backgroundInfSelected = 4;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_backgroundInfSelected != 4) {
+                _data_backgroundInfSelected = 4;
+            } else {
+                _data_backgroundInfSelected = 0;
+            }
+        }
+    }
 
     if (mousePosX < WINDOW_WIDTH * 0.15 && mousePosY > WINDOW_HEIGHT * 0.975) {
         currentPage -= 1;
     }
 }
 
+void _upgradeMenu_mouseHandler() {
+    SDL_GetMouseState(&xMouse, &yMouse);
+}
 
 void selectPage() {
+    _upgradeMenu_mouseHandler();
+    drawBackgroundShop();
     switch (currentPage) {
         case 0:
             displayPage0();
@@ -388,14 +1157,21 @@ void selectPage() {
     }
 }
 
+
 void selectClickPage(int mousePosX, int mousePosY) {
+    _upgradeMenu_mouseHandler();
     switch (currentPage) {
         case 0:
             clickPage0(mousePosX, mousePosY);
             return;
             break;
         case 1:
-            clickPage1(mousePosX, mousePosY);
+            switch (aestheticsUpgradesLayer) {
+                case 0:
+                clickPage1_0(mousePosX, mousePosY);
+                return;
+                break;
+            }
             return;
             break;
         default:

@@ -23,6 +23,24 @@ void _infinityMenu_mouseHandler() {
 
 }
 
+void drawBackgroundInf() {
+    switch (_data_backgroundInfSelected) {
+        case 4:
+            sprite(0 ,0, "../assets/imgs/backgrounds/infinity/tier4bg.bmp");
+            break;
+        case 3:
+            sprite(0 ,0, "../assets/imgs/backgrounds/infinity/tier3bg.bmp");
+            break;
+        case 2:
+            sprite(0 ,0, "../assets/imgs/backgrounds/infinity/tier2bg.bmp");
+            break;
+        case 1:
+            sprite(0 ,0, "../assets/imgs/backgrounds/infinity/tier1bg.bmp");
+            break;
+        default:
+            break;
+    }
+}
 
 int _infinityMenu_checkDependencies(char* upgradeName) {
 
@@ -68,6 +86,8 @@ int _infinityMenu_checkDependencies(char* upgradeName) {
 void _infinityMenu_displayMenu() {
 
     clear();
+
+    drawBackgroundInf();
 
     _text_changeColor(255, 0, 255, 255);
     _text_drawText("Welcome to the infinity tree! Press I to exit.", 0, 0, gameFont_52);
