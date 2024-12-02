@@ -13,11 +13,13 @@
 #include "function.h"
 #include "audio_functions.h"
 #include "brick_patterns.h"
+#include "shaders.h"
 #include "upgrade_menu.h"
 
 
 int currentPage = 0;
 int aestheticsUpgradesLayer = 0;
+int aestheticsULmax = 2;
 int xMouse, yMouse;
 
 void drawBackgroundShop() {
@@ -36,6 +38,17 @@ void drawBackgroundShop() {
             break;
         default:
             break;
+    }
+}
+
+void _upgradeMenu_playMusic() {
+    if (_data_AudioBGSelected >= 2) {
+        if (shopMusicPlaying == 0) {
+            shopMusicPlaying = 1;
+            _audio_loadAndPlayLoop("../assets/audios/shopMusic.wav", ENUM_audioChannels_BACKGROUND, -1);
+        }
+    } else {
+        _audio_stopOnChannel(ENUM_audioChannels_BACKGROUND);
     }
 }
 
@@ -64,7 +77,66 @@ void whiggleText(char* text, int positionX, int positionY, TTF_Font* font) {
     animationFrame = (animationFrame + 1); //% maxWhiggleSize;
 }
 
+void whiggleTextWithSpacing(char* text, int positionX, int positionY, TTF_Font* font, int spacing) {
+    int insideWhiggleSpacing = spacing;
+    int charLength = strlen(text);
 
+    for (int letter = 0; letter < charLength; letter++) {
+        char character[2] = { text[letter], '\0' };
+
+        float angle = (animationFrame * speed) + (letter * amount);
+        int yOffset = (int)(sin(angle) * maxWhiggleSize / 2);
+
+        // Draw the character at the calculated position
+        _text_drawText(character, positionX + insideWhiggleSpacing * letter, positionY + yOffset, font);
+    }
+
+    animationFrame = (animationFrame + 1); //% maxWhiggleSize;
+}
+
+void displayPageShaders() {
+    _text_changeColor(255, 0, 0, 255);
+    whiggleTextWithSpacing("Shady shaders!", 0, 0, gameFont_256, 138);
+    _text_drawText("Press ANY KEY at ANY TIME to exit a shader.", WINDOW_WIDTH * 0.25, WINDOW_HEIGHT * 0.25, gameFont_36);
+
+    changeColor(0, 0, 0);
+    drawRect(WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.4, WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.15);
+    changeColor(155, 155, 155);
+    drawRect(WINDOW_WIDTH * 0.11, WINDOW_HEIGHT * 0.41, WINDOW_WIDTH * 0.33, WINDOW_HEIGHT * 0.13);
+    _text_drawText("Shader 1: Colorful Gradient", WINDOW_WIDTH * 0.115, WINDOW_HEIGHT * 0.415, gameFont_36);
+
+    changeColor(0, 0, 0);
+    drawRect(WINDOW_WIDTH * 0.55, WINDOW_HEIGHT * 0.4, WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.15);
+    changeColor(155, 155, 155);
+    drawRect(WINDOW_WIDTH * 0.56, WINDOW_HEIGHT * 0.41, WINDOW_WIDTH * 0.33, WINDOW_HEIGHT * 0.13);
+    _text_drawText("Shader 2: Crasy Spheres", WINDOW_WIDTH * 0.565, WINDOW_HEIGHT * 0.415, gameFont_36);
+
+    changeColor(0, 0, 0);
+    drawRect(WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.6, WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.15);
+    changeColor(155, 155, 155);
+    drawRect(WINDOW_WIDTH * 0.11, WINDOW_HEIGHT * 0.61, WINDOW_WIDTH * 0.33, WINDOW_HEIGHT * 0.13);
+    _text_drawText("Shader 3: Shiny Neons", WINDOW_WIDTH * 0.115, WINDOW_HEIGHT * 0.615, gameFont_36);
+
+    changeColor(0, 0, 0);
+    drawRect(WINDOW_WIDTH * 0.55, WINDOW_HEIGHT * 0.6, WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.15);
+    changeColor(155, 155, 155);
+    drawRect(WINDOW_WIDTH * 0.56, WINDOW_HEIGHT * 0.61, WINDOW_WIDTH * 0.33, WINDOW_HEIGHT * 0.13);
+    _text_drawText("Shader 4: Fractal Pyramid", WINDOW_WIDTH * 0.565, WINDOW_HEIGHT * 0.615, gameFont_36);
+
+    changeColor(0, 0, 0);
+    drawRect(WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.8, WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.15);
+    changeColor(155, 155, 155);
+    drawRect(WINDOW_WIDTH * 0.11, WINDOW_HEIGHT * 0.81, WINDOW_WIDTH * 0.33, WINDOW_HEIGHT * 0.13);
+    _text_drawText("Shader 5: Phantom Star", WINDOW_WIDTH * 0.115, WINDOW_HEIGHT * 0.815, gameFont_36);
+
+    changeColor(0, 0, 0);
+    drawRect(WINDOW_WIDTH * 0.55, WINDOW_HEIGHT * 0.8, WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.15);
+    changeColor(155, 155, 155);
+    drawRect(WINDOW_WIDTH * 0.56, WINDOW_HEIGHT * 0.81, WINDOW_WIDTH * 0.33, WINDOW_HEIGHT * 0.13);
+    _text_drawText("Shader 6: Mystified Goo", WINDOW_WIDTH * 0.565, WINDOW_HEIGHT * 0.815, gameFont_36);
+
+    _text_drawText("Flee hell -->", WINDOW_WIDTH * 0.89, WINDOW_HEIGHT * 0.975, gameFont_28);
+}
 
 void displayPage0() {
     _text_changeColor(255, 0, 0, 255);
@@ -80,7 +152,7 @@ void displayPage0() {
     char BVcost[300];
     // Function to compute the cost of the upgrade: (x-1)^2 + 10x^2 + 1
     // (pow((_data_upgradeBrickCostLevel - 1), 2) + pow((10 * _data_upgradeBrickCostLevel), 2)))
-    if (!(maxBrickCostLevelValue == _data_upgradeBrickCostLevel)) {
+    if (!(_data_maxBrickCostLevelValue == _data_upgradeBrickCostLevel)) {
         sprintf(BVcost, "Brick value multiplier x2: $%d", (int)(pow((_data_upgradeBrickCostLevel - 1), 2) + pow((10 * _data_upgradeBrickCostLevel), 2)));
         _text_drawText(BVcost, WINDOW_WIDTH * 0.115, WINDOW_HEIGHT * 0.115, gameFont_36);
     } else {
@@ -90,7 +162,7 @@ void displayPage0() {
     changeColor(55, 55, 55);
     drawRect(WINDOW_WIDTH * 0.15, WINDOW_HEIGHT * 0.175, maxBarSize1, WINDOW_HEIGHT * 0.05);
     changeColor(120, 120, 255);
-    drawRect(WINDOW_WIDTH * 0.152, WINDOW_HEIGHT * 0.177, _data_upgradeBrickCostLevel * (maxBarSize1/maxBrickCostLevelValue) - WINDOW_WIDTH * 0.002, WINDOW_HEIGHT * 0.046);
+    drawRect(WINDOW_WIDTH * 0.152, WINDOW_HEIGHT * 0.177, _data_upgradeBrickCostLevel * (maxBarSize1/_data_maxBrickCostLevelValue) - WINDOW_WIDTH * 0.002, WINDOW_HEIGHT * 0.046);
 
 
 
@@ -113,7 +185,6 @@ void displayPage0() {
     changeColor(185, 185, 185);
     drawRect(WINDOW_WIDTH * 0.52, WINDOW_HEIGHT * 0.31, WINDOW_WIDTH * 0.37, WINDOW_HEIGHT * 0.13);
     _text_changeColor(255, 255, 255, 255);
-    char BHcost[300];
     // Function to compute the cost of the upgrade: (5.93*_data_upgradeHeightLevel)^2 - 6.24*_data_upgradeHeightLevel + 45.6
     // (5.93*_data_upgradeHeightLevel)^2 - 6.24*_data_upgradeHeightLevel + 43.6
     sprintf(BWcost, "Add a height layer: $%d", (int)(pow((5.93*_data_upgradeHeightLevel), 2) - 6.24*_data_upgradeHeightLevel + 45.6));
@@ -149,11 +220,10 @@ void displayPage0() {
     changeColor(185, 185, 185);
     drawRect(WINDOW_WIDTH * 0.52, WINDOW_HEIGHT * 0.51, WINDOW_WIDTH * 0.37, WINDOW_HEIGHT * 0.13);
     _text_changeColor(255, 255, 255, 255);
-    char BDcost[300];
     // Function to compute the cost of the upgrade: -1
     // -1
     if (!(_data_lossPreventionLevel == maxLossPreventionLevelValue)) {
-        sprintf(BScost, "Loose less upon death (-1%): $%d", -1);
+        sprintf(BScost, "Loose less upon death (-1%%): $%d", -1);
         _text_drawText(BScost, WINDOW_WIDTH * 0.525, WINDOW_HEIGHT * 0.515, gameFont_36);
         char BDvalue[300];
         sprintf(BDvalue, "Current loss: %d%%", maxLossPreventionLevelValue - _data_lossPreventionLevel);
@@ -200,6 +270,7 @@ void displayPage0() {
     }
 
     _text_drawText("Next page -->", WINDOW_WIDTH * 0.89, WINDOW_HEIGHT * 0.975, gameFont_28);
+    _text_drawText("<-- Shaders..?", 0, WINDOW_HEIGHT * 0.975, gameFont_28);
 }
 
 
@@ -319,6 +390,9 @@ void page1upgrade0() {
     _text_drawText("4", WINDOW_WIDTH * 0.655, WINDOW_HEIGHT * 0.685, gameFont_52);
 
 
+    _text_changeColor(255, 255, 255, 255);
+    _text_drawText("<<", WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.45, gameFont_52);
+    _text_drawText(">>", WINDOW_WIDTH * 0.85, WINDOW_HEIGHT * 0.45, gameFont_52);
 
 
     if (xMouse >= WINDOW_WIDTH * 0.2 &&
@@ -640,6 +714,272 @@ void page1upgrade0() {
 
 }
 
+void page1upgrade1() {
+    _text_changeColor(255, 255, 255, 255);
+    // Backgrounds
+    whiggleText("Bricks", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.2, gameFont_52);
+
+
+    _text_changeColor(0, 0, 255, 255);
+    _text_drawText("Bricks color", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.285, gameFont_36);
+
+    changeColor(155, 155, 155);
+
+    drawRect(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.024, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.002);
+
+    drawSquare(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.2025, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("1", WINDOW_WIDTH * 0.205, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.3525, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("2", WINDOW_WIDTH * 0.355, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.50, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.5025, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("3", WINDOW_WIDTH * 0.505, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.65, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.6525, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("4", WINDOW_WIDTH * 0.655, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+
+    _text_changeColor(255, 255, 255, 255);
+    _text_drawText("<<", WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.45, gameFont_52);
+    _text_drawText(">>", WINDOW_WIDTH * 0.85, WINDOW_HEIGHT * 0.45, gameFont_52);
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.2 &&
+        xMouse <= WINDOW_WIDTH * 0.25 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 1 color", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBricksColor[0] == 0) {
+            _text_drawText("Buy for $100", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else if (_data_bricksColorSelected == 1) {
+            _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        } else {
+            _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.35 &&
+        xMouse <= WINDOW_WIDTH * 0.40 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 2 color", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBricksColor[0] == 0) {
+            _text_drawText("Required: tier 1!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBricksColor[1] == 0) {
+                _text_drawText("Buy for $1000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_bricksColorSelected == 2) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.50 &&
+        xMouse <= WINDOW_WIDTH * 0.55 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 3 color", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBricksColor[1] == 0) {
+            _text_drawText("Required: tier 2!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBricksColor[2] == 0) {
+                _text_drawText("Buy for $10000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_bricksColorSelected == 3) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.65 &&
+        xMouse <= WINDOW_WIDTH * 0.70 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Tier 4 color", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeBricksColor[2] == 0) {
+            _text_drawText("Required: tier 3!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeBricksColor[3] == 0) {
+                _text_drawText("Buy for $100000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_bricksColorSelected == 4) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+}
+
+void page1upgrade2() {
+    _text_changeColor(255, 255, 255, 255);
+    // Backgrounds
+    whiggleText("Music & SFX", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.2, gameFont_52);
+
+
+    _text_changeColor(0, 0, 255, 255);
+    _text_drawText("Background music", WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.285, gameFont_36);
+
+    changeColor(155, 155, 155);
+
+    drawRect(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.024, WINDOW_WIDTH * 0.30, WINDOW_HEIGHT * 0.002);
+
+    drawSquare(WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.2025, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("1", WINDOW_WIDTH * 0.205, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.3525, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("2", WINDOW_WIDTH * 0.355, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+    changeColor(155, 155, 155);
+    drawSquare(WINDOW_WIDTH * 0.50, WINDOW_HEIGHT * 0.32, WINDOW_WIDTH * 0.05);
+    changeColor(255, 255, 255);
+    drawSquare(WINDOW_WIDTH * 0.5025, WINDOW_HEIGHT * 0.325, WINDOW_WIDTH * 0.045);
+    _text_changeColor(255, 0, 0, 255);
+    _text_drawText("3", WINDOW_WIDTH * 0.505, WINDOW_HEIGHT * 0.325, gameFont_52);
+
+
+    _text_changeColor(255, 255, 255, 255);
+    _text_drawText("<<", WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.45, gameFont_52);
+    _text_drawText(">>", WINDOW_WIDTH * 0.85, WINDOW_HEIGHT * 0.45, gameFont_52);
+
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.2 &&
+        xMouse <= WINDOW_WIDTH * 0.25 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Main game bg audio", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeAudioBG[0] == 0) {
+            _text_drawText("Buy for $100", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else if (_data_AudioBGSelected == 1) {
+            _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        } else {
+            _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+            _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.35 &&
+        xMouse <= WINDOW_WIDTH * 0.40 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Shop bg audio", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeAudioBG[0] == 0) {
+            _text_drawText("Required: main", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeAudioBG[1] == 0) {
+                _text_drawText("Buy for $1000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_AudioBGSelected == 2) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+
+
+    if (xMouse >= WINDOW_WIDTH * 0.50 &&
+        xMouse <= WINDOW_WIDTH * 0.55 &&
+        yMouse >= WINDOW_HEIGHT * 0.32 &&
+        yMouse <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        changeColor(120, 120, 120);
+        drawRect(xMouse, yMouse, WINDOW_WIDTH * 0.2, WINDOW_HEIGHT * 0.1);
+        changeColor(180, 180, 180);
+        drawRect(xMouse + WINDOW_WIDTH * 0.005, yMouse + WINDOW_HEIGHT * 0.005, WINDOW_WIDTH * 0.19, WINDOW_HEIGHT * 0.09);
+        _text_changeColor(255, 255, 255, 255);
+        _text_drawText("Infinity bg audio", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.01, gameFont_28);
+        if (_data_upgradeAudioBG[1] == 0) {
+            _text_drawText("Required: shop", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+        } else {
+            if (_data_upgradeAudioBG[2] == 0) {
+                _text_drawText("Buy for $10000", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.05, gameFont_28);
+            } else if (_data_AudioBGSelected == 3) {
+                _text_drawText("Equipped!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to unequip.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            } else {
+                _text_drawText("Not equipped.", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.04, gameFont_28);
+                _text_drawText("Click to equip!", xMouse + WINDOW_WIDTH * 0.01, yMouse + WINDOW_HEIGHT * 0.065, gameFont_28);
+            }
+        }
+    }
+}
 
 void displayPage1() {
     _text_changeColor(0, 0, 255, 255);
@@ -650,7 +990,11 @@ void displayPage1() {
         case 0:
             page1upgrade0();
             break;
-        default:
+        case 1:
+            page1upgrade1();
+            break;
+        case 2:
+            page1upgrade2();
             break;
     }
 
@@ -660,13 +1004,97 @@ void displayPage1() {
 }
 
 
+void clickPageShaders(int mousePosX, int mousePosY) {
+
+    if (mousePosX > WINDOW_WIDTH * 0.1 &&
+        mousePosX < WINDOW_WIDTH * 0.45 &&
+        mousePosY > WINDOW_HEIGHT * 0.4 &&
+        mousePosY < WINDOW_HEIGHT * 0.55
+    ) {
+        shaderSelected = 1;
+        _shader_run();
+    }
+
+    if (mousePosX > WINDOW_WIDTH * 0.55 &&
+        mousePosX < WINDOW_WIDTH * 0.90 &&
+        mousePosY > WINDOW_HEIGHT * 0.4 &&
+        mousePosY < WINDOW_HEIGHT * 0.55
+    ) {
+        shaderSelected = 2;
+        _shader_run();
+    }
+
+    if (mousePosX > WINDOW_WIDTH * 0.1 &&
+        mousePosX < WINDOW_WIDTH * 0.45 &&
+        mousePosY > WINDOW_HEIGHT * 0.6 &&
+        mousePosY < WINDOW_HEIGHT * 0.75
+    ) {
+        shaderSelected = 3;
+        _shader_run();
+    }
+
+    if (mousePosX > WINDOW_WIDTH * 0.55 &&
+        mousePosX < WINDOW_WIDTH * 0.90 &&
+        mousePosY > WINDOW_HEIGHT * 0.6 &&
+        mousePosY < WINDOW_HEIGHT * 0.75
+    ) {
+        shaderSelected = 4;
+        _shader_run();
+    }
+
+    if (mousePosX > WINDOW_WIDTH * 0.1 &&
+        mousePosX < WINDOW_WIDTH * 0.45 &&
+        mousePosY > WINDOW_HEIGHT * 0.6 &&
+        mousePosY < WINDOW_HEIGHT * 0.75
+    ) {
+        shaderSelected = 3;
+        _shader_run();
+    }
+
+    if (mousePosX > WINDOW_WIDTH * 0.55 &&
+        mousePosX < WINDOW_WIDTH * 0.90 &&
+        mousePosY > WINDOW_HEIGHT * 0.6 &&
+        mousePosY < WINDOW_HEIGHT * 0.75
+    ) {
+        shaderSelected = 4;
+        _shader_run();
+    }
+
+
+    if (mousePosX > WINDOW_WIDTH * 0.89 && mousePosY > WINDOW_HEIGHT * 0.975) {
+        currentPage += 1;
+    }
+    if (mousePosX > WINDOW_WIDTH * 0.1 &&
+        mousePosX < WINDOW_WIDTH * 0.45 &&
+        mousePosY > WINDOW_HEIGHT * 0.8 &&
+        mousePosY < WINDOW_HEIGHT * 0.95
+    ) {
+        shaderSelected = 5;
+        _shader_run();
+    }
+
+    if (mousePosX > WINDOW_WIDTH * 0.55 &&
+        mousePosX < WINDOW_WIDTH * 0.90 &&
+        mousePosY > WINDOW_HEIGHT * 0.8 &&
+        mousePosY < WINDOW_HEIGHT * 0.95
+    ) {
+        shaderSelected = 6;
+        _shader_run();
+    }
+
+    if (mousePosX > WINDOW_WIDTH * 0.89 && mousePosY > WINDOW_HEIGHT * 0.975) {
+        currentPage += 1;
+    }
+}
+
+
 void clickPage0(int mousePosX, int mousePosY) {
     _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_LONG_CLICK_SFX], ENUM_audioChannels_UPGRADE_MENU);
 
 
     // Check if mouse in first button
     if (mousePosX > WINDOW_WIDTH * 0.1 && mousePosX < WINDOW_WIDTH * 0.9 && mousePosY > WINDOW_HEIGHT * 0.1 && mousePosY < WINDOW_HEIGHT * 0.25) {
-        if (maxBrickCostLevelValue == _data_upgradeBrickCostLevel) {
+        if (_data_maxBrickCostLevelValue == _data_upgradeBrickCostLevel) {
             return;
         }
         if (_data_cash >= (int)(pow((_data_upgradeBrickCostLevel - 1), 2) + pow((10 * _data_upgradeBrickCostLevel), 2))) {
@@ -781,6 +1209,9 @@ void clickPage0(int mousePosX, int mousePosY) {
 
     if (mousePosX > WINDOW_WIDTH * 0.89 && mousePosY > WINDOW_HEIGHT * 0.975) {
         currentPage += 1;
+    }
+    if (mousePosX < WINDOW_WIDTH * 0.15 && mousePosY > WINDOW_HEIGHT * 0.975) {
+        currentPage -= 1;
     }
 }
 
@@ -1131,6 +1562,305 @@ void clickPage1_0(int mousePosX, int mousePosY) {
         }
     }
 
+    if (mousePosX >= WINDOW_WIDTH * 0.1 &&
+        mousePosX <= WINDOW_WIDTH * 0.2 &&
+        mousePosY >= WINDOW_HEIGHT * 0.45 &&
+        mousePosY <= WINDOW_HEIGHT * 0.55
+    ) {
+        if (aestheticsUpgradesLayer - 1 < 0) {
+            aestheticsUpgradesLayer = aestheticsULmax;
+        } else {
+            aestheticsUpgradesLayer--;
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.85 &&
+        mousePosX <= WINDOW_WIDTH * 0.95 &&
+        mousePosY >= WINDOW_HEIGHT * 0.45 &&
+        mousePosY <= WINDOW_HEIGHT * 0.55
+    ) {
+        if (aestheticsUpgradesLayer + 1 > aestheticsULmax) {
+            aestheticsUpgradesLayer = 0;
+        } else {
+            aestheticsUpgradesLayer++;
+        }
+    }
+
+    _text_changeColor(255, 255, 255, 255);
+    _text_drawText("<<", WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.45, gameFont_52);
+    _text_drawText(">>", WINDOW_WIDTH * 0.85, WINDOW_HEIGHT * 0.45, gameFont_52);
+
+    if (mousePosX < WINDOW_WIDTH * 0.15 && mousePosY > WINDOW_HEIGHT * 0.975) {
+        currentPage -= 1;
+    }
+}
+
+void clickPage1_1(int mousePosX, int mousePosY) {
+    _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_LONG_CLICK_SFX], ENUM_audioChannels_UPGRADE_MENU);
+
+    if (mousePosX >= WINDOW_WIDTH * 0.2 &&
+        mousePosX <= WINDOW_WIDTH * 0.25 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBricksColor[0] == 0) {
+            if (_data_cash >= 1000) {
+                _data_cash -= 1000;
+                _data_upgradeBricksColor[0] = 1;
+                _data_bricksColorSelected = 1;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_bricksColorSelected != 1) {
+                _data_bricksColorSelected = 1;
+            } else {
+                _data_bricksColorSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.35 &&
+        mousePosX <= WINDOW_WIDTH * 0.40 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBricksColor[0] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBricksColor[1] == 0) {
+            if (_data_cash >= 10000) {
+                _data_cash -= 10000;
+                _data_upgradeBricksColor[1] = 1;
+                _data_bricksColorSelected = 2;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_bricksColorSelected != 2) {
+                _data_bricksColorSelected = 2;
+            } else {
+                _data_bricksColorSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.50 &&
+        mousePosX <= WINDOW_WIDTH * 0.55 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBricksColor[1] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBricksColor[2] == 0) {
+            if (_data_cash >= 100000) {
+                _data_cash -= 100000;
+                _data_upgradeBricksColor[2] = 1;
+                _data_bricksColorSelected = 3;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_bricksColorSelected != 3) {
+                _data_bricksColorSelected = 3;
+            } else {
+                _data_bricksColorSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.65 &&
+        mousePosX <= WINDOW_WIDTH * 0.70 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeBricksColor[2] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeBricksColor[3] == 0) {
+            if (_data_cash >= 1000000) {
+                _data_cash -= 1000000;
+                _data_upgradeBricksColor[3] = 1;
+                _data_bricksColorSelected = 4;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_bricksColorSelected != 4) {
+                _data_bricksColorSelected = 4;
+            } else {
+                _data_bricksColorSelected = 0;
+            }
+        }
+    }
+
+
+
+
+    if (mousePosX >= WINDOW_WIDTH * 0.1 &&
+        mousePosX <= WINDOW_WIDTH * 0.2 &&
+        mousePosY >= WINDOW_HEIGHT * 0.45 &&
+        mousePosY <= WINDOW_HEIGHT * 0.55
+    ) {
+        if (aestheticsUpgradesLayer - 1 < 0) {
+            aestheticsUpgradesLayer = aestheticsULmax;
+        } else {
+            aestheticsUpgradesLayer--;
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.85 &&
+        mousePosX <= WINDOW_WIDTH * 0.95 &&
+        mousePosY >= WINDOW_HEIGHT * 0.45 &&
+        mousePosY <= WINDOW_HEIGHT * 0.55
+    ) {
+        if (aestheticsUpgradesLayer + 1 > aestheticsULmax) {
+            aestheticsUpgradesLayer = 0;
+        } else {
+            aestheticsUpgradesLayer++;
+        }
+    }
+
+    _text_changeColor(255, 255, 255, 255);
+    _text_drawText("<<", WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.45, gameFont_52);
+    _text_drawText(">>", WINDOW_WIDTH * 0.85, WINDOW_HEIGHT * 0.45, gameFont_52);
+
+    if (mousePosX < WINDOW_WIDTH * 0.15 && mousePosY > WINDOW_HEIGHT * 0.975) {
+        currentPage -= 1;
+    }
+}
+
+void clickPage1_2(int mousePosX, int mousePosY) {
+    _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_LONG_CLICK_SFX], ENUM_audioChannels_UPGRADE_MENU);
+
+    if (mousePosX >= WINDOW_WIDTH * 0.2 &&
+        mousePosX <= WINDOW_WIDTH * 0.25 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeAudioBG[0] == 0) {
+            if (_data_cash >= 1000) {
+                _data_cash -= 1000;
+                _data_upgradeAudioBG[0] = 1;
+                _data_AudioBGSelected = 1;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_AudioBGSelected != 1) {
+                _data_AudioBGSelected = 1;
+            } else {
+                _data_AudioBGSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.35 &&
+        mousePosX <= WINDOW_WIDTH * 0.40 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeAudioBG[0] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeAudioBG[1] == 0) {
+            if (_data_cash >= 10000) {
+                _data_cash -= 10000;
+                _data_upgradeAudioBG[1] = 1;
+                _data_AudioBGSelected = 2;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_AudioBGSelected != 2) {
+                _data_AudioBGSelected = 2;
+            } else {
+                _data_AudioBGSelected = 0;
+            }
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.50 &&
+        mousePosX <= WINDOW_WIDTH * 0.55 &&
+        mousePosY >= WINDOW_HEIGHT * 0.32 &&
+        mousePosY <= WINDOW_HEIGHT * 0.32 + WINDOW_WIDTH * 0.05
+    ) {
+        if (_data_upgradeAudioBG[1] == 0) {
+            _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+            return;
+        }
+        if (_data_upgradeAudioBG[2] == 0) {
+            if (_data_cash >= 100000) {
+                _data_cash -= 100000;
+                _data_upgradeAudioBG[2] = 1;
+                _data_AudioBGSelected = 3;
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_SUCCESS_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            } else {
+                _audio_loadAndPlay(audioFilepaths[ENUM_audioFiles_BUY_FAILURE_SFX], ENUM_audioChannels_UPGRADE_MENU);
+                return;
+            }
+        } else {
+            if (_data_AudioBGSelected != 3) {
+                _data_AudioBGSelected = 3;
+            } else {
+                _data_AudioBGSelected = 0;
+            }
+        }
+    }
+
+
+    if (mousePosX >= WINDOW_WIDTH * 0.1 &&
+        mousePosX <= WINDOW_WIDTH * 0.2 &&
+        mousePosY >= WINDOW_HEIGHT * 0.45 &&
+        mousePosY <= WINDOW_HEIGHT * 0.55
+    ) {
+        if (aestheticsUpgradesLayer - 1 < 0) {
+            aestheticsUpgradesLayer = aestheticsULmax;
+        } else {
+            aestheticsUpgradesLayer--;
+        }
+    }
+
+    if (mousePosX >= WINDOW_WIDTH * 0.85 &&
+        mousePosX <= WINDOW_WIDTH * 0.95 &&
+        mousePosY >= WINDOW_HEIGHT * 0.45 &&
+        mousePosY <= WINDOW_HEIGHT * 0.55
+    ) {
+        if (aestheticsUpgradesLayer + 1 > aestheticsULmax) {
+            aestheticsUpgradesLayer = 0;
+        } else {
+            aestheticsUpgradesLayer++;
+        }
+    }
+
+    _text_changeColor(255, 255, 255, 255);
+    _text_drawText("<<", WINDOW_WIDTH * 0.1, WINDOW_HEIGHT * 0.45, gameFont_52);
+    _text_drawText(">>", WINDOW_WIDTH * 0.85, WINDOW_HEIGHT * 0.45, gameFont_52);
+
     if (mousePosX < WINDOW_WIDTH * 0.15 && mousePosY > WINDOW_HEIGHT * 0.975) {
         currentPage -= 1;
     }
@@ -1144,6 +1874,10 @@ void selectPage() {
     _upgradeMenu_mouseHandler();
     drawBackgroundShop();
     switch (currentPage) {
+        case -1:
+            displayPageShaders();
+            return;
+            break;
         case 0:
             displayPage0();
             return;
@@ -1161,6 +1895,10 @@ void selectPage() {
 void selectClickPage(int mousePosX, int mousePosY) {
     _upgradeMenu_mouseHandler();
     switch (currentPage) {
+        case -1:
+            clickPageShaders(mousePosX, mousePosY);
+            return;
+            break;
         case 0:
             clickPage0(mousePosX, mousePosY);
             return;
@@ -1168,9 +1906,17 @@ void selectClickPage(int mousePosX, int mousePosY) {
         case 1:
             switch (aestheticsUpgradesLayer) {
                 case 0:
-                clickPage1_0(mousePosX, mousePosY);
-                return;
-                break;
+                    clickPage1_0(mousePosX, mousePosY);
+                    return;
+                    break;
+                case 1:
+                    clickPage1_1(mousePosX, mousePosY);
+                    return;
+                    break;
+                case 2:
+                    clickPage1_2(mousePosX, mousePosY);
+                    return;
+                    break;
             }
             return;
             break;

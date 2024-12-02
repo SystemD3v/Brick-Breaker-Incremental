@@ -9,7 +9,8 @@
 #include "text_handler.h"
 #include "cash_handler.h"
 
+void _infinityMenu_playMusic();
+
 void _infinityMenu_displayMenu();
 
-
-void _infinityMenu_MouseHandler();
+void _infinityMenu_clickHandler(int clickX, int clickY);

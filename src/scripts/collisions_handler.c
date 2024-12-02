@@ -93,6 +93,7 @@ void checkCollisionsWithBricks() {
         }
     }
 
+    //printf("IALOP: %d\n", isAtLeastOnePresent);
     if (!(isAtLeastOnePresent)) {
         _pattern_loadPattern(_data_currentPattern);
     }
@@ -120,10 +121,6 @@ void checkBallCollisionWithBar() {
             // Hit --> adjust
             ball.velocityX = fabsf(ball.velocityX);  // Ball goes right right
         }
-        // If near center, reduce velocity X
-        else {
-            ball.velocityX *= 0.5;  // Gives impression of "straight-er" shot
-        }
     }
 }
 
@@ -133,10 +130,9 @@ void easterEggAnimation() {
     int inAnimation = 1;
     int animFramesLeft = 60 * 7;
     int animFramesElapsed = 0;
-    int initialFramecount = animFramesLeft;
 
 
-    char* textToDraw = "*But it refused.                                                                               ";
+    char* textToDraw = "*But it refused.                                                                                       ";
     int textVisibleGraphemes = 0;
     int textFrameDelay = 60;
     int textPositionX = WINDOW_WIDTH * 0.2;
@@ -207,8 +203,6 @@ void checkCollisionsWithBottom() {
         int wastedDelay = 120;
         int textFramesLeft = 255;
 
-        int switchRepeatsLeft = 20;
-        int colorStep = 0;
         int bgColorR = 0;
         int bgColorG = 0;
         int bgColorB = 0;

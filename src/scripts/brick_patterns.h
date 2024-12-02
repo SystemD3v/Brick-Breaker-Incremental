@@ -9,14 +9,20 @@ struct gameBrick {
     int sizeX;
     int sizeY;
     int hit;
+    int colorR;
+    int colorG;
+    int colorB;
+    int colorBorderR;
+    int colorBorderG;
+    int colorBorderB;
 };
 
 
-extern struct gameBrick **brickMap;
+extern struct gameBrick** brickMap;
 
-extern int **patternBlank;
-extern int **pattern1;
-extern int **pattern2;
+extern int** patternBlank;
+extern int** pattern1;
+extern int** pattern2;
 
 
 void _pattern_allocateMemory();
@@ -26,7 +32,7 @@ void _pattern_initPattern1();
 void _pattern_initPattern2();
 void _pattern_initAll();
 
-void _pattern_copyToMap(struct gameBrick **dest, int **src);
+void _pattern_copyToMap(struct gameBrick** dest, int** src);
 void _pattern_loadPattern(int patternNumber);
 
 void _pattern_displayBricks();

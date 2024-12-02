@@ -22,8 +22,14 @@ extern int window_height;
 extern char* name;
 
 
+// Shaders settings
+extern int shaderSelected;
+
+
 // Run settings
 extern int programLaunched;
+extern int inEvent;
+extern int eventId;
 
 
 // Keydown checks
@@ -69,9 +75,15 @@ void _constants_initBrickMaximums();
 extern float BAR_SPEED_MULTIPLIER;
 
 
+// Music settings
+extern int mainMusicPlaying;
+extern int shopMusicPlaying;
+extern int infinityMusicPlaying;
+
 // Audio settings
-#define MAX_AUDIO_CHANNELS 8
+#define MAX_AUDIO_CHANNELS 64
 enum audioChannels {
+    ENUM_audioChannels_CHANNEL0,
     ENUM_audioChannels_BACKGROUND,
     ENUM_audioChannels_COLLISION_SOUND_EFFECT,
     ENUM_audioChannels_UPGRADE_MENU
@@ -107,7 +119,6 @@ extern SDL_Color textColor;
 extern int IN_UPGRADE_MENU;
 extern int IN_INFINITY_MENU;
 
-extern int maxBrickCostLevelValue;
 extern int maxGameSpeedLevelValue;
 extern int maxLossPreventionLevelValue;
 

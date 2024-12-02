@@ -13,8 +13,13 @@ int window_height = 0;
 char* name = "SDL app";
 
 
+// Shaders settings
+int shaderSelected;
+
 // Run settings
 int programLaunched = 1;
+int inEvent = 0;
+int eventId = 0;
 
 
 // Keydown checks
@@ -50,6 +55,12 @@ void _constants_initBrickMaximums() {
 // Init gamespeed
 float BAR_SPEED_MULTIPLIER = 2;
 
+
+
+// Music settings
+int mainMusicPlaying = 0;
+int shopMusicPlaying = 0;
+int infinityMusicPlaying = 0;
 
 // Audio filepaths
 char* audioFilepaths[ENUM_audioFiles_NUMBER_OF_FILES] = {
@@ -88,7 +99,6 @@ SDL_Color textColor = {255, 0, 0, 255};
 int IN_UPGRADE_MENU = 0;
 int IN_INFINITY_MENU = 0;
 
-int maxBrickCostLevelValue = 22;
 int maxGameSpeedLevelValue = 15;
 int maxLossPreventionLevelValue = 11;
 

@@ -21,6 +21,8 @@ int _data_currentPattern = 1;
 int _data_rToReset = 0;
 int _data_tToPattern = 0;
 
+int _data_maxBrickCostLevelValue = 22;
+
 int UPGRADE_BACKGROUND_MAIN = 4;
 int _data_upgradeBackgroundMain[4] = {0};
 int _data_backgroundMainSelected = 0;
@@ -30,6 +32,13 @@ int _data_backgroundShopSelected = 0;
 int UPGRADE_BACKGROUND_INF = 4;
 int _data_upgradeBackgroundInf[4] = {0};
 int _data_backgroundInfSelected = 0;
+int UPGRADE_BRICKS_COLOR = 4;
+int _data_upgradeBricksColor[4] = {0};
+int _data_bricksColorSelected = 0;
+
+int UPGRADE_AUDIO_BG = 3;
+int _data_upgradeAudioBG[3] = {0};
+int _data_AudioBGSelected = 0;
 
 int UPGRADE_COUNT = 10;
 int _data_upgradeBought[10] = {0};
@@ -56,6 +65,7 @@ void _data_saveGame() {
     cJSON_AddNumberToObject(json, "upgradeLossPrevention", _data_lossPreventionLevel);
     cJSON_AddNumberToObject(json, "upgradeRToReset", _data_rToReset);
     cJSON_AddNumberToObject(json, "upgradeTToPattern", _data_tToPattern);
+    cJSON_AddNumberToObject(json, "maxBrickCostLevel", _data_maxBrickCostLevelValue);
 
     cJSON_AddNumberToObject(json, "saveCurrentPattern", _data_currentPattern);
 
@@ -65,21 +75,28 @@ void _data_saveGame() {
 
 
     cJSON_AddNumberToObject(json, "backgroundMainSelected", _data_backgroundMainSelected);
-
     cJSON *upgradeBackgroundMainBoughtArray = cJSON_CreateIntArray(_data_upgradeBackgroundMain, UPGRADE_BACKGROUND_MAIN);
     cJSON_AddItemToObject(json, "upgradeBackgroundMain", upgradeBackgroundMainBoughtArray);
 
 
     cJSON_AddNumberToObject(json, "backgroundShopSelected", _data_backgroundShopSelected);
-
     cJSON *upgradeBackgroundShopBoughtArray = cJSON_CreateIntArray(_data_upgradeBackgroundShop, UPGRADE_BACKGROUND_SHOP);
     cJSON_AddItemToObject(json, "upgradeBackgroundShop", upgradeBackgroundShopBoughtArray);
 
 
     cJSON_AddNumberToObject(json, "backgroundInfSelected", _data_backgroundInfSelected);
-
     cJSON *upgradeBackgroundInfBoughtArray = cJSON_CreateIntArray(_data_upgradeBackgroundInf, UPGRADE_BACKGROUND_INF);
     cJSON_AddItemToObject(json, "upgradeBackgroundInf", upgradeBackgroundInfBoughtArray);
+
+
+    cJSON_AddNumberToObject(json, "bricksColorSelected", _data_bricksColorSelected);
+    cJSON *upgradeBricksColorSelectedArray = cJSON_CreateIntArray(_data_upgradeBricksColor, UPGRADE_BRICKS_COLOR);
+    cJSON_AddItemToObject(json, "upgradeBricksColor", upgradeBricksColorSelectedArray);
+
+
+    cJSON_AddNumberToObject(json, "audioBGSelected", _data_AudioBGSelected);
+    cJSON *upgradeAudioBGSelectedArray = cJSON_CreateIntArray(_data_upgradeAudioBG, UPGRADE_AUDIO_BG);
+    cJSON_AddItemToObject(json, "upgradeAudioBG", upgradeAudioBGSelectedArray);
 
 
     char *json_string = cJSON_Print(json);
@@ -157,6 +174,9 @@ int _data_loadGame() {
     cJSON *upgradeTToPattern_item = cJSON_GetObjectItem(json, "upgradeTToPattern");
     if (upgradeTToPattern_item && cJSON_IsNumber(upgradeTToPattern_item)) _data_tToPattern = upgradeTToPattern_item->valueint;
 
+    cJSON *upgradeMaxBrickCostLevel_item = cJSON_GetObjectItem(json, "maxBrickCostLevel");
+    if (upgradeMaxBrickCostLevel_item && cJSON_IsNumber(upgradeMaxBrickCostLevel_item)) _data_maxBrickCostLevelValue = upgradeMaxBrickCostLevel_item->valueint;
+
     cJSON *saveCurrentPattern_item = cJSON_GetObjectItem(json, "saveCurrentPattern");
     if (saveCurrentPattern_item && cJSON_IsNumber(saveCurrentPattern_item)) _data_currentPattern = saveCurrentPattern_item->valueint;
 
@@ -185,6 +205,7 @@ int _data_loadGame() {
     cJSON *saveBackgroundMainSelected_item = cJSON_GetObjectItem(json, "backgroundMainSelected");
     if (saveBackgroundMainSelected_item && cJSON_IsNumber(saveBackgroundMainSelected_item)) _data_backgroundMainSelected = saveBackgroundMainSelected_item->valueint;
 
+
     cJSON *upgradeBackgroundShopArray = cJSON_GetObjectItem(json, "upgradeBackgroundShop");
     if (upgradeBackgroundShopArray && cJSON_IsArray(upgradeBackgroundShopArray)) {
         for (int i = 0; i < UPGRADE_BACKGROUND_SHOP; i++) {
@@ -197,6 +218,7 @@ int _data_loadGame() {
     cJSON *saveBackgroundShopSelected_item = cJSON_GetObjectItem(json, "backgroundShopSelected");
     if (saveBackgroundShopSelected_item && cJSON_IsNumber(saveBackgroundShopSelected_item)) _data_backgroundShopSelected = saveBackgroundShopSelected_item->valueint;
 
+
     cJSON *upgradeBackgroundInfArray = cJSON_GetObjectItem(json, "upgradeBackgroundInf");
     if (upgradeBackgroundInfArray && cJSON_IsArray(upgradeBackgroundInfArray)) {
         for (int i = 0; i < UPGRADE_BACKGROUND_INF; i++) {
@@ -208,6 +230,32 @@ int _data_loadGame() {
     }
     cJSON *saveBackgroundInfSelected_item = cJSON_GetObjectItem(json, "backgroundInfSelected");
     if (saveBackgroundInfSelected_item && cJSON_IsNumber(saveBackgroundInfSelected_item)) _data_backgroundInfSelected = saveBackgroundInfSelected_item->valueint;
+
+
+    cJSON *upgradeBrickColorArray = cJSON_GetObjectItem(json, "upgradeBricksColor");
+    if (upgradeBrickColorArray && cJSON_IsArray(upgradeBrickColorArray)) {
+        for (int i = 0; i < UPGRADE_BRICKS_COLOR; i++) {
+            cJSON *item = cJSON_GetArrayItem(upgradeBrickColorArray, i);
+            if (item && cJSON_IsNumber(item)) {
+                _data_upgradeBricksColor[i] = item->valueint;
+            }
+        }
+    }
+    cJSON *saveBrickColorSelected_item = cJSON_GetObjectItem(json, "bricksColorSelected");
+    if (saveBrickColorSelected_item && cJSON_IsNumber(saveBrickColorSelected_item)) _data_bricksColorSelected = saveBrickColorSelected_item->valueint;
+
+
+    cJSON *upgradeAudioBGArray = cJSON_GetObjectItem(json, "upgradeAudioBG");
+    if (upgradeAudioBGArray && cJSON_IsArray(upgradeAudioBGArray)) {
+        for (int i = 0; i < UPGRADE_AUDIO_BG; i++) {
+            cJSON *item = cJSON_GetArrayItem(upgradeAudioBGArray, i);
+            if (item && cJSON_IsNumber(item)) {
+                _data_upgradeAudioBG[i] = item->valueint;
+            }
+        }
+    }
+    cJSON *saveAudioBGSelected_item = cJSON_GetObjectItem(json, "audioBGSelected");
+    if (saveAudioBGSelected_item && cJSON_IsNumber(saveAudioBGSelected_item)) _data_AudioBGSelected = saveAudioBGSelected_item->valueint;
 
 
     cJSON_Delete(json);

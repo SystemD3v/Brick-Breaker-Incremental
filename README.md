@@ -6,6 +6,4 @@
 - jsmn (sudo apt-get install libjsmn-dev)
 
 # COMPILATION COMMAND:
-- gcc main.c constants.c function.c audio_functions.c brick_patterns.c collisions_handler.c text_handler.c playerData.c cash_handler.c upgrade_menu.c infinity_menu.c  -o "main.out" -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_ttf -lcjson -lm
-
-
+- gcc main.c constants.c function.c audio_functions.c brick_patterns.c collisions_handler.c text_handler.c playerData.c cash_handler.c upgrade_menu.c infinity_menu.c jetpack_joyride.c shaders.c -o "main.out" -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_ttf -lcjson -lm -lGLEW -lGL

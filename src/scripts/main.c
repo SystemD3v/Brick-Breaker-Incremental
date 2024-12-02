@@ -5,6 +5,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <jsmn.h> // JSON Handling
 #include <math.h>
+#include <time.h>
+#include <GL/glew.h> // Shaders Stuff
 
 
 #include "constants.h"
@@ -17,6 +19,9 @@
 #include "cash_handler.h"
 #include "upgrade_menu.h"
 #include "infinity_menu.h"
+#include "jetpack_joyride.h"
+//#include "shaders.h"
+
 
 
 void init_game() {
@@ -50,6 +55,8 @@ void init_game() {
 
     _text_initializeTtfLibrary();
     _constants_loadFont();
+
+    //_shaders_loadParameters();
 }
 
 
@@ -57,8 +64,9 @@ void init_game() {
 void updateBallPosition() {
     if (ball.x <= 0 || ball.x >= WINDOW_WIDTH - ball.size) {
         ball.velocityX = ball.velocityX * -1;
-    } else if (ball.y <= 0 || ball.y >= WINDOW_HEIGHT - ball.size) {
+    } else if (ball.y <= 0 || ball.y + ball.size <= 0 || ball.y >= WINDOW_HEIGHT - ball.size) {
         ball.velocityY = ball.velocityY * -1;
+        ball.y += ball.size;
     }
     if (ball.velocityX > 0) {
         ball.velocityX = _data_gameSpeed;
@@ -115,8 +123,22 @@ void drawBackground() {
         case 1:
             sprite(0 ,0, "../assets/imgs/backgrounds/tier1bg.bmp");
             break;
+        case 0:
+            break;
         default:
             break;
+    }
+}
+
+
+void playMainMusic() {
+    if (_data_AudioBGSelected >= 1) {
+        if (mainMusicPlaying == 0) {
+            mainMusicPlaying = 1;
+            _audio_loadAndPlayLoop("../assets/audios/mainMusic.wav", ENUM_audioChannels_BACKGROUND, -1);
+        }
+    } else {
+        _audio_stopOnChannel(ENUM_audioChannels_BACKGROUND);
     }
 }
 
@@ -126,6 +148,8 @@ void drawGame(){
      * pouvoir deplacer la figure à chaque boucle de gameLoop()
      */
     clear();
+    //glClear(GL_COLOR_BUFFER_BIT);
+
 
     // Barckground stuff here
     drawBackground();
@@ -170,17 +194,33 @@ void drawGame(){
         _text_drawText("Press I to open the infinity tree.", WINDOW_WIDTH * 0.63, WINDOW_HEIGHT - 80, gameFont_36);
     }
 
+    /*
+    // Use shader program
+    glUseProgram(shaderProgram);
+
+    // Pass uniforms
+    glUniform2f(iResolutionLoc, 1920.0f, 1080.0f);  // Replace with actual screen size if different
+    glUniform1f(iTimeLoc, SDL_GetTicks() / 1000.0f);  // Pass elapsed time
+
+
+    // Render the quad
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    SDL_GL_SwapWindow(window);
+    */
 
     // And here we go again
     actualize();
+
     usleep(1000000 / FPS); // 60 images par seconde | 1000000 = 1 seconde
 }
 
-
-void KeyPressed(SDL_Keycode touche){
+void KeyPressed(SDL_Keycode touche){;
     /** @brief event.key.keysym.sym renvoi la touche appuyé
      *
      */
+
     switch (touche) {
         // Voir doc SDL_Keycode pour plus de touches https://wiki.libsdl.org/SDL_Keycode
         case SDLK_ESCAPE:
@@ -227,6 +267,14 @@ void KeyPressed(SDL_Keycode touche){
                 _data_currentPattern = (numberOfPatterns > _data_currentPattern) ? _data_currentPattern + 1 : 1;
                 _pattern_loadPattern(_data_currentPattern);
             }
+            break;
+        case SDLK_m:
+            _cash_brickIncome(10000000);
+            break;
+        case SDLK_j:
+            inEvent = 1;
+            eventId = 1;
+            break;
         default:
             break;
     }
@@ -268,12 +316,35 @@ void joyButtonPressed(){
 
 
 void GAME_MASTERORDER() {
-    if (IN_UPGRADE_MENU == 1) {
-        _upgradeMenu_displayMenu();
-    } else if (IN_INFINITY_MENU == 1) {
-        _infinityMenu_displayMenu();
+    if (inEvent) {
+        mainMusicPlaying = 0;
+        shopMusicPlaying = 0;
+        infinityMusicPlaying = 0;
+        switch (eventId) {
+            case 1:
+                _event_JJloop();
+                inEvent = 0;
+                break;
+            default:
+                break;
+        }
     } else {
-        drawGame();
+        if (IN_UPGRADE_MENU == 1) {
+            mainMusicPlaying = 0;
+            infinityMusicPlaying = 0;
+            _upgradeMenu_playMusic();
+            _upgradeMenu_displayMenu();
+        } else if (IN_INFINITY_MENU == 1) {
+            mainMusicPlaying = 0;
+            shopMusicPlaying = 0;
+            _infinityMenu_playMusic();
+            _infinityMenu_displayMenu();
+        } else {
+            shopMusicPlaying = 0;
+            infinityMusicPlaying = 0;
+            playMainMusic();
+            drawGame();
+        }
     }
 }
 
@@ -303,7 +374,11 @@ void gameLoop() {
                     /* clique de la souris
                      * event.motion.y | event.motion.x pour les positions de la souris
                      */
-                    onClick(event.motion.x, event.motion.y);
+                    if (IN_INFINITY_MENU) {
+                        _infinityMenu_clickHandler(event.motion.x, event.motion.y);
+                    } else {
+                        onClick(event.motion.x, event.motion.y);
+                    }
                     break;
                 case SDL_KEYDOWN:
                     KeyPressed(event.key.keysym.sym);
@@ -328,12 +403,19 @@ int main(){
      *  freeAndTerminate() : quitte le programme proprement
      */
 
+    srand(time(NULL));
+
     init(WINDOW_WIDTH, WINDOW_HEIGHT);
     init_game();
+
     gameLoop();
 
     _data_saveGame();
 
     printf("Fin du programme\n");
+    /*
+    glDeleteProgram(shaderProgram);
+    SDL_GL_DeleteContext(glContext);
+    */
     freeAndTerminate();
 }

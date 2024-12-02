@@ -14,3 +14,5 @@
 void _upgradeMenu_displayMenu();
 
 void _upgradeMenu_clickHandler();
+
+void _upgradeMenu_playMusic();

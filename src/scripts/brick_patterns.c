@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "function.h"
 #include "brick_patterns.h"
+#include "playerData.h"
 
 
 int numberOfPatterns = 2;
@@ -80,9 +81,116 @@ void _pattern_initPattern2() {
     }
 }
 
+int destColor; // 0=R; 1=G; 2=B;
+void brickColorHandler(struct gameBrick **dest, int i, int j) {
+    switch (_data_bricksColorSelected) {
+        case 4:
+            switch(destColor) {
+                case 0:
+                    dest[i][j].colorR = (j * (255 / NB_BRICK_HEIGHT) + i * (255 / NB_BRICK_WIDTH))/2;
+                    dest[i][j].colorG = 0;
+                    dest[i][j].colorB = 0;
+                    dest[i][j].colorBorderR = 255;
+                    dest[i][j].colorBorderG = 0;
+                    dest[i][j].colorBorderB = 0;
+                    break;
+                case 1:
+                    dest[i][j].colorR = 0;
+                    dest[i][j].colorG = (j * (255 / NB_BRICK_HEIGHT) + i * (255 / NB_BRICK_WIDTH))/2;
+                    dest[i][j].colorB = 0;
+                    dest[i][j].colorBorderR = 0;
+                    dest[i][j].colorBorderG = 255;
+                    dest[i][j].colorBorderB = 0;
+                    break;
+                case 2:
+                    dest[i][j].colorR = 0;
+                    dest[i][j].colorG = 0;
+                    dest[i][j].colorB = (j * (255 / NB_BRICK_HEIGHT) + i * (255 / NB_BRICK_WIDTH))/2;
+                    dest[i][j].colorBorderR = 0;
+                    dest[i][j].colorBorderG = 0;
+                    dest[i][j].colorBorderB = 255;
+                    break;
+            }
+            break;
+        case 3:
+            switch(destColor) {
+                case 0:
+                    dest[i][j].colorR = j * (255 / NB_BRICK_HEIGHT);
+                    dest[i][j].colorG = 0;
+                    dest[i][j].colorB = 0;
+                    dest[i][j].colorBorderR = 255;
+                    dest[i][j].colorBorderG = 0;
+                    dest[i][j].colorBorderB = 0;
+                    break;
+                case 1:
+                    dest[i][j].colorR = 0;
+                    dest[i][j].colorG = j * (255 / NB_BRICK_HEIGHT);
+                    dest[i][j].colorB = 0;
+                    dest[i][j].colorBorderR = 0;
+                    dest[i][j].colorBorderG = 255;
+                    dest[i][j].colorBorderB = 0;
+                    break;
+                case 2:
+                    dest[i][j].colorR = 0;
+                    dest[i][j].colorG = 0;
+                    dest[i][j].colorB = j * (255 / NB_BRICK_HEIGHT);
+                    dest[i][j].colorBorderR = 0;
+                    dest[i][j].colorBorderG = 0;
+                    dest[i][j].colorBorderB = 255;
+                    break;
+            }
+            break;
+        case 2:
+            switch(destColor) {
+                case 0:
+                    dest[i][j].colorR = i * (255 / NB_BRICK_WIDTH);
+                    dest[i][j].colorG = 0;
+                    dest[i][j].colorB = 0;
+                    dest[i][j].colorBorderR = 255;
+                    dest[i][j].colorBorderG = 0;
+                    dest[i][j].colorBorderB = 0;
+                    break;
+                case 1:
+                    dest[i][j].colorR = 0;
+                    dest[i][j].colorG = i * (255 / NB_BRICK_WIDTH);
+                    dest[i][j].colorB = 0;
+                    dest[i][j].colorBorderR = 0;
+                    dest[i][j].colorBorderG = 255;
+                    dest[i][j].colorBorderB = 0;
+                    break;
+                case 2:
+                    dest[i][j].colorR = 0;
+                    dest[i][j].colorG = 0;
+                    dest[i][j].colorB = i * (255 / NB_BRICK_WIDTH);
+                    dest[i][j].colorBorderR = 0;
+                    dest[i][j].colorBorderG = 0;
+                    dest[i][j].colorBorderB = 255;
+                    break;
+            }
+            break;
+        case 1:
+            dest[i][j].colorR = rand() % 255;
+            dest[i][j].colorG = rand() % 255;
+            dest[i][j].colorB = rand() % 255;
+            dest[i][j].colorBorderR = rand() % 255;
+            dest[i][j].colorBorderG = rand() % 255;
+            dest[i][j].colorBorderB = rand() % 255;
+            break;
+        case 0:
+            dest[i][j].colorR = 255;
+            dest[i][j].colorG = 0;
+            dest[i][j].colorB = 0;
+            dest[i][j].colorBorderR = 0;
+            dest[i][j].colorBorderG = 0;
+            dest[i][j].colorBorderB = 255;
+            break;
+
+    }
+}
 
 // Copy a pattern to the brickMap
-void _pattern_copyToMap(struct gameBrick **dest, int **src) {
+void _pattern_copyToMap(struct gameBrick** dest, int** src) {
+    destColor = rand() % 3;
     for (int i = 0; i < NB_BRICK_WIDTH; i++) {
         for (int j = 0; j < NB_BRICK_HEIGHT; j++) {
 
@@ -92,12 +200,14 @@ void _pattern_copyToMap(struct gameBrick **dest, int **src) {
                 dest[i][j].sizeX = MAX_BRICKS_WIDTH / NB_BRICK_WIDTH;
                 dest[i][j].sizeY = MAX_BRICKS_HEIGHT / NB_BRICK_HEIGHT;
                 dest[i][j].hit = 0;
+                brickColorHandler(dest, i, j);
             } else {
                 dest[i][j].x = -1;
                 dest[i][j].y = -1;
                 dest[i][j].sizeX = 0;
                 dest[i][j].sizeY = 0;
                 dest[i][j].hit = 1;
+
             }
         }
     }
@@ -130,9 +240,10 @@ void _pattern_displayBricks() {
     for (int i = 0; i < NB_BRICK_WIDTH; i++) {
         for (int j = 0; j < NB_BRICK_HEIGHT; j++) {
             //printf("%d, %d, %d, %d.\n", brickMap[i][j].x, brickMap[i][j].y, brickMap[i][j].sizeX, brickMap[i][j].sizeY);
-            changeColor(0, 0, 255);
+            //printf("%d, %d, %d, %d, %d, %d\n", brickMap[i][j].colorBorderR, brickMap[i][j].colorBorderG, brickMap[i][j].colorBorderB,brickMap[i][j].colorR, brickMap[i][j].colorG, brickMap[i][j].colorB);
+            changeColor(brickMap[i][j].colorBorderR, brickMap[i][j].colorBorderG, brickMap[i][j].colorBorderB);
             drawRect(brickMap[i][j].x, brickMap[i][j].y, brickMap[i][j].sizeX, brickMap[i][j].sizeY);
-            changeColor(255, 0, 0);
+            changeColor(brickMap[i][j].colorR, brickMap[i][j].colorG, brickMap[i][j].colorB);
             drawRect(brickMap[i][j].x + 1, brickMap[i][j].y + 1, brickMap[i][j].sizeX - 2, brickMap[i][j].sizeY - 2);
         }
     }

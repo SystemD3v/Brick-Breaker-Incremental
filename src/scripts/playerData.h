@@ -17,6 +17,8 @@ extern int _data_rToReset;
 extern int _data_tToPattern;
 extern int _data_currentPattern;
 
+extern int _data_maxBrickCostLevelValue;
+
 extern int UPGRADE_BACKGROUND_MAIN;
 extern int _data_upgradeBackgroundMain[4];
 extern int _data_backgroundMainSelected;
@@ -26,6 +28,14 @@ extern int _data_backgroundShopSelected;
 extern int UPGRADE_BACKGROUND_INF;
 extern int _data_upgradeBackgroundInf[4];
 extern int _data_backgroundInfSelected;
+
+extern int UPGRADE_BRICKS_COLOR;
+extern int _data_upgradeBricksColor[4];
+extern int _data_bricksColorSelected;
+
+extern int UPGRADE_AUDIO_BG;
+extern int _data_upgradeAudioBG[3];
+extern int _data_AudioBGSelected;
 
 extern int UPGRADE_COUNT;
 extern int _data_upgradeBought[10];
