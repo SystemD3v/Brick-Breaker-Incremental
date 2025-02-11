@@ -1,4 +1,4 @@
-# Linux/Debian
+# Linux/Debian/Ubuntu
 ## Requirements:
 - SDL2 (sudo apt-get install libsdl2-dev)
 - SDL2_mixer (sudo apt-get install libsdl2-mixer-dev)
